@@ -1,10 +1,14 @@
 # Progress
 
 ## What Works
-- The project has been thoroughly planned, and the core technical decisions are documented in `projectbrief.md`.
+- The project's memory bank is fully initialized with a detailed brief, context, and technical patterns.
+- A comprehensive set of `.clinerules` has been established to guide development.
+- The Git repository has been initialized and all initial documentation has been committed.
 
 ## What's Left to Build
-- Everything. The project is at the initialization stage. No code has been written yet.
+- The Next.js application itself.
+- All features, including the crawler, chat interface, and backend logic.
 
 ## Known Issues
 - None at this time.
+
