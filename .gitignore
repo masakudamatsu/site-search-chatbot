@@ -37,3 +37,8 @@ pnpm-debug.log*
 # Playwright reports and traces
 /playwright-report/
 /test-results/
+
+# Playwright
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
