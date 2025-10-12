@@ -16,6 +16,7 @@
 
 ## Development & Testing
 - **E2E & Visual Regression Testing:** Playwright
+- **Test Execution:** The project uses an `npm test` script which is configured to run the Playwright test suite.
 - **Configuration:** Environment variables will be used to manage settings like the target website URL, LLM model, and cron job frequency.
 
 ## Development Methodology
