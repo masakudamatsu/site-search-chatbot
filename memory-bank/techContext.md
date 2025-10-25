@@ -22,6 +22,8 @@
   - `npm test`: Runs the Playwright suite on Chromium only. This is the recommended command for quick, iterative development.
   - `npm run test:all`: Runs the Playwright suite on all configured browsers (Chromium, Firefox, WebKit), which is suitable for CI or pre-commit checks.
 - **Configuration:** Environment variables will be used to manage settings like the target website URL, LLM model, and cron job frequency.
+- **Testing Streaming Responses:** Attempts to mock streaming API responses with Playwright's `route.fulfill()` have failed, as its `body` property does not accept a `ReadableStream`. The established pattern for this project is to test features that rely on streaming against the real API, using carefully timed assertions to validate UI states during the stream.
+ 
 
 ## Development Methodology
 - **Test-Driven Development (TDD):** The project will follow a TDD approach. For each new feature, a failing test (primarily using Playwright for end-to-end testing) will be written first. The implementation code will then be developed to make the test pass, followed by an optional refactoring step.
