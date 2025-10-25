@@ -1,10 +1,10 @@
 # Active Context
 
 ## Current Focus
-Core Feature Development: Backend API and LLM Integration.
+Enhance the user experience by implementing a multi-stage loading indicator that provides clear feedback while the chatbot is generating a response.
 
 ## Next Steps
-1.  **Create API Route:** Set up a new Next.js API route handler at `/api/chat` that will receive the user's message and chat history.
-2.  **Integrate Vercel AI SDK:** Use the `streamText` function from the Vercel AI SDK to send the prompt to the language model and stream the response back to the client.
-3.  **Update Frontend:** Modify the `ChatInput` component to send a `POST` request to the new `/api/chat` endpoint instead of only updating local state.
-4.  **Handle Streaming Response:** Update the `Home` component (`page.tsx`) to handle the streaming response from the API and display the AI's message in the `MessageList`.
+1.  **Initial Loading State:** When a message is submitted, display a typing indicator (an animated three-dot ellipsis) in the message list and replace the "Submit" button with a "Stop Generating" button.
+2.  **Streaming State:** As soon as the first tokens of the AI's response arrive, replace the typing indicator with the streaming text, appended with a blinking cursor to show that more text is coming.
+3.  **Final State:** Once the response stream is complete, remove the blinking cursor from the message and revert the "Stop Generating" button back to the "Submit" button.
+4.  **Future Work:** Once the loading indicator is implemented, the next major feature will be the web crawling and data ingestion pipeline.

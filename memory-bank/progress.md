@@ -6,20 +6,17 @@
 - A fully initialized Next.js application using the `src` directory structure and TypeScript path aliases.
 - A complete Playwright configuration for end-to-end testing, integrated with the Next.js development server.
 - A successful TDD cycle verifying the homepage title and a fully configured Tailwind CSS setup.
-- A complete, client-side chat interface that matches the Claude AI aesthetic. This includes:
-    - A conditional welcome screen for the initial state.
-    - An active chat view for conversations.
-    - All necessary components (`ChatInput`, `MessageList`, `ChatMessage`).
-    - Client-side state management with React hooks.
-    - A passing E2E test (`chat.spec.ts`) that verifies the core user flow.
+- A complete, client-side chat interface that matches the Claude AI aesthetic.
+- A fully functional, end-to-end streaming chat feature:
+    - A backend API route at `/api/chat` that handles requests.
+    - Integration with the Vercel AI SDK (`useChat`, `streamText`) for state management and streaming.
+    - Connection to an open-source LLM (`gpt-oss-20b`) hosted on Together.ai.
+    - Frontend components capable of rendering streamed Markdown responses, including tables, thanks to `react-markdown` and `@tailwindcss/typography`.
+    - A passing E2E test (`e2e/chat.spec.ts`) that verifies the entire flow.
 
 ## What's Left to Build
-- The backend logic for the chatbot, including:
-    - Connecting the UI to a backend API route.
-    - Generating embeddings for user queries.
-    - Performing vector search against the database.
-    - Streaming responses from the LLM.
 - The web crawling and data ingestion pipeline.
+- A loading indicator to show while the chatbot is generating a response.
 
 ## Known Issues
 - None at this time.

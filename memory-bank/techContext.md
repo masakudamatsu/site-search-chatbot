@@ -6,10 +6,12 @@
 - **Web Scraping:** Playwright
 - **AI/LLM Orchestration:** LangChain.js (for text splitting)
 - **Frontend AI Integration:** Vercel AI SDK
+- **Markdown Rendering:** `react-markdown` with `remark-gfm`
+- **Typography Styling:** `@tailwindcss/typography`
 
 ## Services & Platforms
-- **LLM Hosting:** Replicate (for `gpt-oss-20b`)
-- **Embedding Generation:** Replicate
+- **LLM Hosting:** Together.ai (for `gpt-oss-20b`)
+- **Embedding Generation:** Together.ai
 - **Vector Database:** Supabase pgvector
 - **Deployment:** Vercel
 - **Scheduled Jobs:** Vercel Cron Jobs
