@@ -17,6 +17,7 @@ For any tasks involving Tailwind CSS, refer to the official documentation as you
     - **Adding Base Styles**: https://tailwindcss.com/docs/adding-base-styles
     - **Styling based on parent state (group)**: https://tailwindcss.com/docs/hover-focus-and-other-states#group-states
 - **Dark Mode**: https://tailwindcss.com/docs/dark-mode
+- **Tailwind Typography plugin**: https://github.com/tailwindlabs/tailwindcss-typography
 
 ## Instructions
 
