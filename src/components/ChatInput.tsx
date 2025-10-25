@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 
 interface ChatInputProps {
-  onSendMessage: (message: string) => void;
+  onSendMessage: (message: { text: string }) => void;
 }
 
 export default function ChatInput({ onSendMessage }: ChatInputProps) {
@@ -12,7 +12,7 @@ export default function ChatInput({ onSendMessage }: ChatInputProps) {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (inputValue.trim()) {
-      onSendMessage(inputValue);
+      onSendMessage({ text: inputValue });
       setInputValue("");
     }
   };
