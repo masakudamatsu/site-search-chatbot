@@ -11,6 +11,8 @@ export default function Home() {
   });
 
   const isLoading = status === "submitted" || status === "streaming";
+  const isTyping = status === "submitted";
+
   return (
     <main className="flex h-screen flex-col">
       {messages.length === 0 ? (
@@ -32,7 +34,7 @@ export default function Home() {
         <>
           <div className="flex-grow overflow-y-auto">
             <div className="mx-auto w-full max-w-2xl p-4">
-              <MessageList messages={messages} />
+              <MessageList messages={messages} isTyping={isTyping} />
             </div>
           </div>
           <div className="w-full max-w-2xl self-center p-4">

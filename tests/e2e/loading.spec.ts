@@ -31,4 +31,26 @@ test.describe("Chat Loading Indicator", () => {
     // The input should be enabled again.
     await expect(chatInput).toBeEnabled({ timeout: 30000 });
   });
+  test("should show typing indicator while submitting", async ({ page }) => {
+    await page.goto("/");
+
+    const sendButton = page.getByLabel("Send message");
+    const searchForm = page.getByRole("search");
+    const messageInput = searchForm.locator('input[type="text"]');
+
+    // Type a message and submit
+    await messageInput.fill("Why is the sky blue?");
+    await sendButton.click();
+
+    // Find the indicator by its accessible, screen-reader-only text.
+    const typingIndicator = page.getByText("Preparing an answer...");
+    await expect(typingIndicator).toBeVisible();
+
+    // Wait for the streaming to start and the AI response to appear.
+    // Once the AI message appears, the typing indicator should be gone.
+    const messageList = page.getByRole("list");
+    const aiMessage = messageList.locator("li").nth(1); // The second message in the list
+    await expect(aiMessage).toBeVisible({ timeout: 30000 });
+    await expect(typingIndicator).not.toBeVisible();
+  });
 });
