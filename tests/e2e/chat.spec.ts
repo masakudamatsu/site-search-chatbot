@@ -5,9 +5,10 @@ test("should allow a user to send a message and receive a response from the AI",
 }) => {
   await page.goto("/");
 
-  // 1. Find the input field and the send button.
-  const messageInput = page.getByPlaceholder("Type your question...");
-  const sendButton = page.getByRole("button", { name: "Send" });
+  // 1. Find the input field and the send button using robust selectors.
+  const sendButton = page.getByLabel("Send message");
+  const searchForm = page.getByRole("search");
+  const messageInput = searchForm.locator('input[type="text"]');
 
   // 2. Type a message and click send.
   const testMessage = "What is the capital of France?";
