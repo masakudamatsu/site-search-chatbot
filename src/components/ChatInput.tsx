@@ -1,12 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 
 interface ChatInputProps {
   onSendMessage: (message: { text: string }) => void;
+  isLoading: boolean;
+  stop: () => void;
 }
 
-export default function ChatInput({ onSendMessage }: ChatInputProps) {
+const ChatInput = memo(function ChatInput({
+  onSendMessage,
+  isLoading,
+  stop,
+}: ChatInputProps) {
   const [inputValue, setInputValue] = useState("");
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -30,6 +36,7 @@ export default function ChatInput({ onSendMessage }: ChatInputProps) {
         placeholder="Type your question..."
         className="w-full rounded-full border-2 border-gray-600 bg-gray-700 p-4 pr-16 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
+      {!isLoading ? (
       <button
         type="submit"
         className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-blue-500 p-3 text-white transition-colors hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-700"
@@ -44,6 +51,25 @@ export default function ChatInput({ onSendMessage }: ChatInputProps) {
           <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
         </svg>
       </button>
+      ) : (
+        <button
+          type="button"
+          onClick={stop}
+          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-gray-500 p-3 text-white transition-colors hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-700"
+          aria-label="Stop generating"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="h-6 w-6"
+          >
+            <path d="M3 3h18v18H3z" />
+          </svg>
+        </button>
+      )}
     </form>
   );
-}
+});
+
+export default ChatInput;

@@ -6,10 +6,11 @@ import ChatInput from "@/components/ChatInput";
 import MessageList from "@/components/MessageList";
 
 export default function Home() {
-  const { messages, sendMessage } = useChat({
+  const { messages, sendMessage, status, stop } = useChat({
     transport: new DefaultChatTransport({ api: "/api/chat" }),
   });
 
+  const isLoading = status === "submitted" || status === "streaming";
   return (
     <main className="flex h-screen flex-col">
       {messages.length === 0 ? (
@@ -19,7 +20,11 @@ export default function Home() {
             <h1 className="text-4xl font-bold">Site Search Chatbot</h1>
           </div>
           <div className="w-full max-w-2xl p-4">
-            <ChatInput onSendMessage={sendMessage} />
+            <ChatInput
+              onSendMessage={sendMessage}
+              isLoading={isLoading}
+              stop={stop}
+            />
           </div>
         </div>
       ) : (
@@ -31,7 +36,11 @@ export default function Home() {
             </div>
           </div>
           <div className="w-full max-w-2xl self-center p-4">
-            <ChatInput onSendMessage={sendMessage} />
+            <ChatInput
+              onSendMessage={sendMessage}
+              isLoading={isLoading}
+              stop={stop}
+            />
           </div>
         </>
       )}
