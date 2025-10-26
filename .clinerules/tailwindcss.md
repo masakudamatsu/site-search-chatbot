@@ -17,10 +17,12 @@ For any tasks involving Tailwind CSS, refer to the official documentation as you
     - **Adding Base Styles**: https://tailwindcss.com/docs/adding-base-styles
     - **Styling based on parent state (group)**: https://tailwindcss.com/docs/hover-focus-and-other-states#group-states
 - **Dark Mode**: https://tailwindcss.com/docs/dark-mode
+- **Animation**: https://tailwindcss.com/docs/animation
 - **Tailwind Typography plugin**: https://github.com/tailwindlabs/tailwindcss-typography
 
 ## Instructions
 
 - Adhere strictly to the configuration and utility classes described in the above linked documentation.
 - Do not use `@import` statements for base, components, and utilities in `globals.css` as this is not the standard for Tailwind CSS v4 with Next.js. The single `@import "tailwindcss";` is correct.
+- Note that Tailwind CSS v4 does not use a `tailwind.config.js` file by default. Theme customizations, such as adding custom animations, should be done directly in the main CSS file (`src/app/globals.css`) using the `@theme` directive.
 - If you get 404 errors by visiting the above URL links, please stop and report. You'll be given an instruction on where to look at instead.
