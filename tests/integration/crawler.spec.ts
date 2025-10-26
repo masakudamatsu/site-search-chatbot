@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { crawlPage } from "@/lib/crawler";
+import { crawlPage, extractLinks } from "@/lib/crawler";
 
 const pageWithMain = "https://www.wikipedia.org";
 const pageWithoutMain = "https://www.google.com";
@@ -22,4 +22,15 @@ test("should fall back to the <body> tag if <main> does not exist", async () => 
 
   // Check that we get something.
   expect(content.length).toBeGreaterThan(0);
+});
+
+test("should extract internal links and exclude external ones", async () => {
+  const url = "http://info.cern.ch";
+  const links = await extractLinks(url);
+
+  // Check that an internal link is included
+  expect(links).toContain("http://info.cern.ch/hypertext/WWW/TheProject.html");
+
+  // Check that an external link is NOT included
+  expect(links).not.toContain("http://home.web.cern.ch/about");
 });
