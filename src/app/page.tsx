@@ -5,12 +5,14 @@ import { DefaultChatTransport } from "ai";
 import ChatInput from "@/components/ChatInput";
 import MessageList from "@/components/MessageList";
 import TypingIndicator from "@/components/TypingIndicator";
+
 export default function Home() {
   const { messages, sendMessage, status, stop } = useChat({
     transport: new DefaultChatTransport({ api: "/api/chat" }),
   });
 
   const isLoading = status === "submitted" || status === "streaming";
+  const isStreaming = status === "streaming";
 
   return (
     <main className="flex h-screen flex-col">
@@ -33,7 +35,7 @@ export default function Home() {
         <>
           <div className="flex-grow overflow-y-auto">
             <div className="mx-auto w-full max-w-2xl p-4">
-              <MessageList messages={messages} />
+              <MessageList messages={messages} isStreaming={isStreaming} />
               <div className="flex justify-start">
                 {status === "submitted" && <TypingIndicator />}
               </div>

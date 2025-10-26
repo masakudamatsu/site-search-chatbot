@@ -53,4 +53,34 @@ test.describe("Chat Loading Indicator", () => {
     await expect(aiMessage).toBeVisible({ timeout: 30000 });
     await expect(typingIndicator).not.toBeVisible();
   });
+  test("should show blinking cursor while streaming and hide it when done", async ({
+    page,
+  }) => {
+    await page.goto("/");
+
+    const sendButton = page.getByLabel("Send message");
+    const searchForm = page.getByRole("search");
+    const messageInput = searchForm.locator('input[type="text"]');
+
+    await messageInput.fill("Tell me a very short story.");
+    await sendButton.click();
+
+    // 1. Wait for the typing indicator to appear first.
+    const typingIndicator = page.getByText("Preparing an answer...");
+    await expect(typingIndicator).toBeVisible();
+
+    // 2. Now, wait for the typing indicator to disappear. This is our key event.
+    await expect(typingIndicator).not.toBeVisible({ timeout: 10000 });
+
+    // 3. Immediately after the indicator is gone, the blinking cursor should be visible.
+    const blinkingCursor = page.getByText("More to come. Please wait.");
+    await expect(blinkingCursor).toBeVisible();
+
+    // 4. Wait for the stream to complete by waiting for the "Stop Generating" button to disappear.
+    const stopButton = page.getByRole("button", { name: "Stop Generating" });
+    await expect(stopButton).not.toBeVisible({ timeout: 30000 });
+
+    // 5. Once the stream is finished, the cursor should be gone.
+    await expect(blinkingCursor).not.toBeVisible();
+  });
 });

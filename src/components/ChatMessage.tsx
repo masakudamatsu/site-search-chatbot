@@ -2,13 +2,21 @@ import React from "react";
 import { type UIMessage } from "ai";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import BlinkingCursor from "@/components/BlinkingCursor";
 
 interface ChatMessageProps {
   message: UIMessage;
+  isLastMessage: boolean;
+  isStreaming: boolean;
 }
 
-export default function ChatMessage({ message }: ChatMessageProps) {
+export default function ChatMessage({
+  message,
+  isLastMessage,
+  isStreaming,
+}: ChatMessageProps) {
   const isUser = message.role === "user";
+  const showCursor = isLastMessage && isStreaming && !isUser;
 
   return (
     <li
@@ -33,6 +41,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
           // Return null for other part types we don't handle yet
           return null;
         })}
+        {showCursor && <BlinkingCursor />}
       </div>
     </li>
   );
