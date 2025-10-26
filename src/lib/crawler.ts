@@ -10,10 +10,13 @@ export async function crawlPage(url: string): Promise<string> {
 
   try {
     await page.goto(url, { waitUntil: "domcontentloaded" });
-
-    // For the initial implementation, we'll extract the inner text of the body.
-    // We can make this more sophisticated later.
-    const content = await page.evaluate(() => document.body.innerText);
+    const content = await page.evaluate(() => {
+      const main = document.querySelector("main");
+      if (main) {
+        return main.innerText;
+      }
+      return document.body.innerText;
+    });
 
     return content;
   } catch (error) {

@@ -1,12 +1,25 @@
 import { test, expect } from "@playwright/test";
 import { crawlPage } from "@/lib/crawler";
 
-test("should crawl a single page and extract its content", async () => {
-  // For this initial test, we can use a simple, reliable page.
-  // We'll make this more robust later.
-  const url = "https://www.google.com";
-  const content = await crawlPage(url);
+const pageWithMain = "https://www.wikipedia.org";
+const pageWithoutMain = "https://www.google.com";
 
-  expect(typeof content).toBe("string");
+test("should extract content from the <main> tag", async () => {
+  const content = await crawlPage(pageWithMain);
+
+  // Check for content that is definitely in <main>
+  expect(content).toContain("The Free Encyclopedia");
+
+  // Check for content that is definitely NOT in <main> (e.g., in the footer)
+  expect(content).not.toContain("Terms of Use");
+});
+
+test("should fall back to the <body> tag if <main> does not exist", async () => {
+  const content = await crawlPage(pageWithoutMain);
+
+  // Check for content that is definitely in <body>
+  expect(content).toContain("Google");
+
+  // Check that we get something.
   expect(content.length).toBeGreaterThan(0);
 });
