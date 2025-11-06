@@ -39,4 +39,13 @@ test("should extract internal links and exclude external ones", async () => {
   // Check that an external link is NOT included
   expect(links).not.toContain("http://home.web.cern.ch/about");
 });
+
+  test("should strip URL fragments from extracted links", async () => {
+    const url = "http://info.cern.ch/hypertext/WWW/TheProject.html";
+    const links = await extractLinks(url);
+
+    for (const link of links) {
+      expect(link).not.toContain("#");
+    }
+  });
 });

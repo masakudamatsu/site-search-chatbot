@@ -46,7 +46,12 @@ export async function extractLinks(url: string): Promise<string[]> {
 
       for (const link of allLinks) {
         // Convert into absolute path by attaching `document.baseURI`, which is typically the current directory.
-        const absoluteUrl = new URL(link.href, document.baseURI).href;
+        const urlObj = new URL(link.href, document.baseURI);
+
+        // Remove the hash from the URL
+        urlObj.hash = "";
+        const absoluteUrl = urlObj.href;
+
         // Keep link URLs only if it's in the same domain
         if (absoluteUrl.startsWith(pageOrigin)) {
           internalLinks.add(absoluteUrl);
