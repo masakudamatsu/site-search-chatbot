@@ -9,7 +9,13 @@ export async function crawlPage(url: string): Promise<string> {
   const page = await browser.newPage();
 
   try {
-    await page.goto(url, { waitUntil: "domcontentloaded" });
+    const response = await page.goto(url, { waitUntil: "domcontentloaded" });
+
+    // Check if the page loaded successfully
+    if (!response || !response.ok()) {
+      console.warn(`Failed to load ${url}: Status ${response?.status()}`);
+      return "";
+    }
     const content = await page.evaluate(() => {
       const main = document.querySelector("main");
       if (main) {

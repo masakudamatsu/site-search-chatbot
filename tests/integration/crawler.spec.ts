@@ -24,6 +24,13 @@ test("should fall back to the <body> tag if <main> does not exist", async () => 
   // Check that we get something.
   expect(content.length).toBeGreaterThan(0);
   });
+
+  test("should return empty content for a 404 page", async () => {
+    // This is a known dead link on the site
+    const url = "https://info.cern.ch/hypertext/WWW/TkWWW/BUGS";
+    const content = await crawlPage(url);
+    expect(content).toBe("");
+  });
 });
 
 test.describe("extractLinks()", () => {
