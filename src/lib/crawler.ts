@@ -75,3 +75,45 @@ export async function extractLinks(url: string): Promise<string[]> {
     await browser.close();
   }
 }
+
+export async function crawlWebsite(
+  startUrl: string,
+  limit: number = 1000 // Upper limit of number of pages to crawl
+): Promise<Map<string, string>> {
+  // Return value
+  const siteContent = new Map<string, string>();
+
+  // URLs to visit
+  const queue: string[] = [startUrl];
+  // URLs that have already been processed
+  const visited = new Set<string>();
+
+  while (queue.length > 0 && siteContent.size < limit) {
+    const currentUrl = queue.shift()!; // Get the next URL to crawl
+
+    if (visited.has(currentUrl)) {
+      continue; // Skip if we've already visited this URL
+    }
+
+    console.log(`Crawling: ${currentUrl}`);
+    visited.add(currentUrl);
+
+    // 1. Get the content of the page
+    const content = await crawlPage(currentUrl);
+    if (content) {
+      siteContent.set(currentUrl, content);
+    }
+
+    // 2. Find all the links on the page
+    const links = await extractLinks(currentUrl);
+
+    // 3. Add new, unvisited links to the queue
+    for (const link of links) {
+      if (!visited.has(link)) {
+        queue.push(link);
+      }
+    }
+  }
+
+  return siteContent;
+}
