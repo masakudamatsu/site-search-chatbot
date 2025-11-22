@@ -138,15 +138,15 @@ export async function crawlWebsite(
     const pageData = await crawlPage(currentUrl);
     if (pageData) {
       siteContent.set(currentUrl, pageData);
-    }
 
-    // 2. Find all the links on the page
-    const links = await extractLinks(currentUrl);
+      // 2. Find all the links on the page
+      const links = await extractLinks(currentUrl);
 
-    // 3. Add new, unvisited links to the queue
-    for (const link of links) {
-      if (!visited.has(link)) {
-        queue.push(link);
+      // 3. Add new, unvisited links to the queue
+      for (const link of links) {
+        if (!visited.has(link)) {
+          queue.push(link);
+        }
       }
     }
   }
