@@ -18,14 +18,15 @@
     - Recursively crawl a website starting from a given URL.
     - Extract text content, prioritizing the `<main>` element.
     - Discover and follow internal links while ignoring external ones and URL fragments.
+    - Filter out links with non-HTML extensions (PDFs, images, etc.).
 
 ## What's Left to Build
 - Productionize the web crawler by implementing:
-    - Content-type filtering (e.g., ignoring PDFs, images).
     - URL normalization (e.g., stripping tracking parameters).
     - `robots.txt` compliance.
     - Polite rate-limiting.
     - Metadata extraction (titles, descriptions).
+    - Header-based Content-Type verification (deferred).
 - The data ingestion pipeline to process and store crawled content.
 
 ## Known Issues

@@ -3,6 +3,8 @@ import { crawlPage, crawlWebsite, extractLinks } from "@/lib/crawler";
 
 const pageWithMain = "https://www.wikipedia.org";
 const pageWithoutMain = "https://www.google.com";
+const pageWithPdfLinks =
+  "https://www.export-japan.co.jp/solution_services/text_production/";
 
 test.describe("crawlPage()", () => {
   test("should extract content from the <main> tag", async () => {
@@ -54,6 +56,12 @@ test.describe("extractLinks()", () => {
     for (const link of links) {
       expect(link).not.toContain("#");
     }
+  });
+
+  test("should exclude PDF links", async () => {
+    const links = await extractLinks(pageWithPdfLinks);
+    // Should NOT find the PDF
+    expect(links.some((link) => link.endsWith(".pdf"))).toBe(false);
   });
 });
 

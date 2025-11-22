@@ -50,6 +50,18 @@ export async function extractLinks(url: string): Promise<string[]> {
       const allLinks = Array.from(document.querySelectorAll("a"));
       const internalLinks = new Set<string>();
 
+      const ignoredExtensions = [
+        ".pdf",
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".gif",
+        ".zip",
+        ".docx",
+        ".xlsx",
+        ".pptx",
+      ]; // crawler.spec.ts tests `.pdf` only, though
+
       for (const link of allLinks) {
         // Convert into absolute path by attaching `document.baseURI`, which is typically the current directory.
         const urlObj = new URL(link.href, document.baseURI);
@@ -57,6 +69,12 @@ export async function extractLinks(url: string): Promise<string[]> {
         // Remove the hash from the URL
         urlObj.hash = "";
         const absoluteUrl = urlObj.href;
+        const pathname = urlObj.pathname.toLowerCase();
+
+        // Check if it ends with an ignored extension
+        if (ignoredExtensions.some((ext) => pathname.endsWith(ext))) {
+          continue;
+        }
 
         // Keep link URLs only if it's in the same domain
         if (absoluteUrl.startsWith(pageOrigin)) {
