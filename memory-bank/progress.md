@@ -21,13 +21,17 @@
     - Filter out links with non-HTML extensions (PDFs, images, etc.).
 
 ## What's Left to Build
-- Productionize the web crawler by implementing:
-    - URL normalization (e.g., stripping tracking parameters).
-    - `robots.txt` compliance.
-    - Polite rate-limiting.
+- **Crawler Enhancements:**
     - Metadata extraction (titles, descriptions).
-    - Header-based Content-Type verification (deferred).
-- The data ingestion pipeline to process and store crawled content.
+    - Redirect handling.
+- **Data Pipeline:**
+    - The data ingestion pipeline to process and store crawled content.
+
+## Deferred Tasks
+- **URL Normalization:** Stripping tracking parameters.
+- **`robots.txt` Compliance:** Respecting crawler exclusion rules.
+- **Polite Rate-Limiting:** Adding delays between requests.
+- **Header-based Content-Type Verification:** A safety net for non-HTML dynamic URLs.
 
 ## Known Issues
 - For Safari, the UI gets frozen in the middle of streaming an answer, which causes the blinking cursor to be not blinking and the stop button to be not functioning. This is because the React Markdown occupies the main thread for up to 15 seconds. (No such problem is found for Chrome and Firefox.) The issue is postponed for now.
