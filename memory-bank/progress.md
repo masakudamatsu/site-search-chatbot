@@ -19,15 +19,15 @@
     - Extract text content, prioritizing the `<main>` element.
     - Discover and follow internal links while ignoring external ones and URL fragments.
     - Filter out links with non-HTML extensions (PDFs, images, etc.).
+    - Extract page metadata (title, description).
+    - Correctly handle HTTP redirects to avoid duplicate processing.
 
 ## What's Left to Build
-- **Crawler Enhancements:**
-    - Metadata extraction (titles, descriptions).
-    - Redirect handling.
 - **Data Pipeline:**
     - The data ingestion pipeline to process and store crawled content.
 
 ## Deferred Tasks
+### Web crawler
 - **URL Normalization:** Stripping tracking parameters.
 - **`robots.txt` Compliance:** Respecting crawler exclusion rules.
 - **Polite Rate-Limiting:** Adding delays between requests.
