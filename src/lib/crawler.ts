@@ -1,8 +1,15 @@
 import { chromium } from "playwright";
 
-export async function crawlPage(url: string): Promise<string> {
+export interface PageData {
+  url: string;
+  title: string;
+  description: string;
+  content: string;
+}
+
+export async function crawlPage(url: string): Promise<PageData | null> {
   if (!url) {
-    return "";
+    return null;
   }
 
   const browser = await chromium.launch();
@@ -14,20 +21,31 @@ export async function crawlPage(url: string): Promise<string> {
     // Check if the page loaded successfully
     if (!response || !response.ok()) {
       console.warn(`Failed to load ${url}: Status ${response?.status()}`);
-      return "";
+      return null;
     }
-    const content = await page.evaluate(() => {
+    const data = await page.evaluate((url) => {
       const main = document.querySelector("main");
-      if (main) {
-        return main.innerText;
-      }
-      return document.body.innerText;
-    });
+      const content = main ? main.innerText : document.body.innerText;
+      const title = document.title;
+      const metaDescription = document.querySelector(
+        'meta[name="description"]'
+      );
+      const description = metaDescription
+        ? (metaDescription as HTMLMetaElement).content
+        : "";
 
-    return content;
+      return {
+        url,
+        title,
+        description,
+        content,
+      };
+    }, url);
+
+    return data;
   } catch (error) {
     console.error(`Failed to crawl ${url}:`, error);
-    return "";
+    return null;
   } finally {
     await browser.close();
   }
@@ -97,9 +115,9 @@ export async function extractLinks(url: string): Promise<string[]> {
 export async function crawlWebsite(
   startUrl: string,
   limit: number = 1000 // Upper limit of number of pages to crawl
-): Promise<Map<string, string>> {
+): Promise<Map<string, PageData>> {
   // Return value
-  const siteContent = new Map<string, string>();
+  const siteContent = new Map<string, PageData>();
 
   // URLs to visit
   const queue: string[] = [startUrl];
@@ -117,9 +135,9 @@ export async function crawlWebsite(
     visited.add(currentUrl);
 
     // 1. Get the content of the page
-    const content = await crawlPage(currentUrl);
-    if (content) {
-      siteContent.set(currentUrl, content);
+    const pageData = await crawlPage(currentUrl);
+    if (pageData) {
+      siteContent.set(currentUrl, pageData);
     }
 
     // 2. Find all the links on the page

@@ -8,30 +8,41 @@ const pageWithPdfLinks =
 
 test.describe("crawlPage()", () => {
   test("should extract content from the <main> tag", async () => {
-    const content = await crawlPage(pageWithMain);
+    const result = await crawlPage(pageWithMain);
 
+    expect(result).not.toBeNull();
     // Check for content that is definitely in <main>
-    expect(content).toContain("The Free Encyclopedia");
+    expect(result?.content).toContain("The Free Encyclopedia");
 
     // Check for content that is definitely NOT in <main> (e.g., in the footer)
-    expect(content).not.toContain("Terms of Use");
+    expect(result?.content).not.toContain("Terms of Use");
   });
 
   test("should fall back to the <body> tag if <main> does not exist", async () => {
-    const content = await crawlPage(pageWithoutMain);
+    const result = await crawlPage(pageWithoutMain);
 
+    expect(result).not.toBeNull();
     // Check for content that is definitely in <body>
-    expect(content).toContain("Google");
-
+    expect(result?.content).toContain("Google");
     // Check that we get something.
-    expect(content.length).toBeGreaterThan(0);
+    expect(result!.content.length).toBeGreaterThan(0);
   });
 
   test("should return empty content for a 404 page", async () => {
     // This is a known dead link on the site
     const url = "https://info.cern.ch/hypertext/WWW/TkWWW/BUGS";
-    const content = await crawlPage(url);
-    expect(content).toBe("");
+    const result = await crawlPage(url);
+    expect(result).toBeNull();
+  });
+
+  test("should extract title and meta description", async () => {
+    const result = await crawlPage(pageWithMain);
+
+    expect(result).not.toBeNull();
+    // Wikipedia's title usually contains "Wikipedia"
+    expect(result?.title).toContain("Wikipedia");
+    // Wikipedia has a meta description
+    expect(result?.description).toContain("encyclopedia");
   });
 });
 
@@ -77,11 +88,13 @@ test.describe("crawlWebsite()", () => {
 
     // Check that we have content from the start page
     expect(siteContent.has(startUrl)).toBe(true);
-    expect(siteContent.get(startUrl)).toContain("the first website");
+    expect(siteContent.get(startUrl)?.content).toContain("the first website");
 
     // Check that we have content from a linked page
     const linkedPageUrl = "http://info.cern.ch/hypertext/WWW/TheProject.html";
     expect(siteContent.has(linkedPageUrl)).toBe(true);
-    expect(siteContent.get(linkedPageUrl)).toContain("The WorldWideWeb (W3)");
+    expect(siteContent.get(linkedPageUrl)?.content).toContain(
+      "The WorldWideWeb (W3)"
+    );
   });
 });
