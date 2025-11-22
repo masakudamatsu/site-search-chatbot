@@ -5,7 +5,11 @@ const pageWithMain = "https://www.wikipedia.org";
 const pageWithoutMain = "https://www.google.com";
 const pageWithPdfLinks =
   "https://www.export-japan.co.jp/solution_services/text_production/";
-
+const redirectUrl = {
+  origin: "https://www.export-japan.co.jp/solution_services/writing/",
+  destination:
+    "https://www.export-japan.co.jp/solution_services/text_production/",
+};
 test.describe("crawlPage()", () => {
   test("should extract content from the <main> tag", async () => {
     const result = await crawlPage(pageWithMain);
@@ -44,6 +48,14 @@ test.describe("crawlPage()", () => {
     // Wikipedia has a meta description
     expect(result?.description).toContain("encyclopedia");
   });
+
+  test("should follow redirects and return the final URL", async () => {
+    const result = await crawlPage(redirectUrl.origin);
+
+    expect(result).not.toBeNull();
+    // The returned URL should be the one after redirect
+    expect(result?.url).toBe(redirectUrl.destination);
+  });
 });
 
 test.describe("extractLinks()", () => {
@@ -78,7 +90,7 @@ test.describe("extractLinks()", () => {
 
 test.describe("crawlWebsite()", () => {
   test("should crawl a website up to a specified limit", async () => {
-    const startUrl = "http://info.cern.ch";
+    const startUrl = "http://info.cern.ch/";
     const numberOfPages = 5;
     // Crawl only 5 pages to keep the test fast
     const siteContent = await crawlWebsite(startUrl, numberOfPages);
@@ -96,5 +108,15 @@ test.describe("crawlWebsite()", () => {
     expect(siteContent.get(linkedPageUrl)?.content).toContain(
       "The WorldWideWeb (W3)"
     );
+  });
+  test("should store content under the final URL after redirect", async () => {
+    // Crawl just the one page (limit 1)
+    const siteContent = await crawlWebsite(redirectUrl.origin, 1);
+
+    // It should NOT be stored under the original URL
+    expect(siteContent.has(redirectUrl.origin)).toBe(false);
+
+    // It SHOULD be stored under the final URL
+    expect(siteContent.has(redirectUrl.destination)).toBe(true);
   });
 });

@@ -23,7 +23,10 @@ export async function crawlPage(url: string): Promise<PageData | null> {
       console.warn(`Failed to load ${url}: Status ${response?.status()}`);
       return null;
     }
-    const data = await page.evaluate((url) => {
+    // Capture the final URL (after any redirects)
+    const finalUrl = response.url();
+
+    const data = await page.evaluate((finalUrl) => {
       const main = document.querySelector("main");
       const content = main ? main.innerText : document.body.innerText;
       const title = document.title;
@@ -35,12 +38,12 @@ export async function crawlPage(url: string): Promise<PageData | null> {
         : "";
 
       return {
-        url,
+        url: finalUrl,
         title,
         description,
         content,
       };
-    }, url);
+    }, finalUrl);
 
     return data;
   } catch (error) {
@@ -132,16 +135,18 @@ export async function crawlWebsite(
     }
 
     console.log(`Crawling: ${currentUrl}`);
+    // Mark the requested URL as visited
     visited.add(currentUrl);
 
     // 1. Get the content of the page
     const pageData = await crawlPage(currentUrl);
     if (pageData) {
-      siteContent.set(currentUrl, pageData);
-
+      // Store content under the FINAL URL
+      siteContent.set(pageData.url, pageData);
+      // Also mark the FINAL URL as visited to avoid re-crawling it later
+      visited.add(pageData.url);
       // 2. Find all the links on the page
-      const links = await extractLinks(currentUrl);
-
+      const links = await extractLinks(pageData.url);
       // 3. Add new, unvisited links to the queue
       for (const link of links) {
         if (!visited.has(link)) {
@@ -150,6 +155,5 @@ export async function crawlWebsite(
       }
     }
   }
-
   return siteContent;
 }
