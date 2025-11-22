@@ -14,9 +14,19 @@
     - Frontend components capable of rendering streamed Markdown responses, including tables, thanks to `react-markdown` and `@tailwindcss/typography`.
     - A passing E2E test (`e2e/chat.spec.ts`) that verifies the entire flow.
 - A complete, multi-stage loading indicator (`Stop Generating` button, typing indicator, and blinking cursor) to provide user feedback during response generation.
+- An initial web crawler implementation (`src/lib/crawler.ts`) that can:
+    - Recursively crawl a website starting from a given URL.
+    - Extract text content, prioritizing the `<main>` element.
+    - Discover and follow internal links while ignoring external ones and URL fragments.
 
 ## What's Left to Build
-- The web crawling and data ingestion pipeline.
+- Productionize the web crawler by implementing:
+    - Content-type filtering (e.g., ignoring PDFs, images).
+    - URL normalization (e.g., stripping tracking parameters).
+    - `robots.txt` compliance.
+    - Polite rate-limiting.
+    - Metadata extraction (titles, descriptions).
+- The data ingestion pipeline to process and store crawled content.
 
 ## Known Issues
 - For Safari, the UI gets frozen in the middle of streaming an answer, which causes the blinking cursor to be not blinking and the stop button to be not functioning. This is because the React Markdown occupies the main thread for up to 15 seconds. (No such problem is found for Chrome and Firefox.) The issue is postponed for now.
