@@ -4,11 +4,14 @@
 
 For any tasks involving LangChain, refer to the official documentation as your primary source.
 
-- **Installation**: "Setup" section in https://js.langchain.com/docs/tutorials/rag/
-- **Text Splitting**: "Splitting documents" section in https://js.langchain.com/docs/tutorials/rag/
-- **Embeddings**: https://js.langchain.com/docs/integrations/text_embedding/
-- **Embedding with HuggingFace Transformers**: https://js.langchain.com/docs/integrations/text_embedding/transformers/
-- **API Reference**: https://v03.api.js.langchain.com/index.html
+- **What's new in v1**: https://docs.langchain.com/oss/javascript/releases/langchain-v1
+- **Installation**: https://docs.langchain.com/oss/javascript/langchain/install
+- **Quickstart**: https://docs.langchain.com/oss/javascript/langchain/quickstart
+- **Build a RAG agent with LangChain**: https://docs.langchain.com/oss/javascript/langchain/rag
+- **Text Splitters**: https://docs.langchain.com/oss/javascript/integrations/splitters/index
+- **Embeddings**: https://docs.langchain.com/oss/javascript/integrations/text_embedding/index
+- **Embedding with HuggingFace Transformers**: https://docs.langchain.com/oss/javascript/integrations/text_embedding/transformers
+- **API Reference**: https://reference.langchain.com/javascript/modules/langchain.html
 
 ## Instructions
 
