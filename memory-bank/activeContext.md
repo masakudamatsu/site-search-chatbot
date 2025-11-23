@@ -4,28 +4,22 @@
 With the core crawler functionality now robust, the immediate focus shifts to developing the data ingestion pipeline to process and store the collected content.
 
 ## Recently Completed
+- **Data Ingestion Pipeline**:
+    - Implemented `processPage` for text splitting using LangChain.
+    - Implemented `generateEmbeddings` for vectorization (with mock testing).
+    - Implemented `storeEmbeddings` for database storage (with mock testing).
+    - Created an `ingestData` orchestrator to run the full pipeline.
+    - Followed TDD, creating a comprehensive integration test suite for the pipeline.
 - **Initial Crawler Implementation**: Developed the core recursive crawling logic (`crawlWebsite`), page content extraction (`crawlPage`), and internal link discovery (`extractLinks`).
 - **Integration Test Suite**: Created a comprehensive set of tests for the crawler's functionality.
 - **Extension-based Content Filtering**: Added logic to `extractLinks` to ignore URLs with non-HTML file extensions.
 - **Metadata Extraction**: Updated the crawler to extract page titles and meta descriptions.
 - **Redirect Handling**: The crawler now correctly handles HTTP redirects, storing content under the final canonical URL to prevent duplicates.
 
-## Next Steps: Implement the Data Ingestion Pipeline
-
-The development will proceed in four distinct steps, following a Test-Driven Development (TDD) approach.
-
-*   **Step 1: Foundational Setup**
-    *   Create a new test suite (`tests/integration/ingestion.spec.ts`) for the data ingestion logic.
-    *   Define the data structures for processed and chunked content.
-    *   Set up mock services for Supabase and the Together.ai embedding API to ensure fast and isolated tests.
-*   **Step 2: Content Processing**
-    *   Implement text splitting using LangChain.js.
-    *   Implement the embedding generation logic.
-*   **Step 3: Database Interaction**
-    *   Implement the logic to store the embeddings and content chunks in the Supabase vector database.
-*   **Step 4: Integration**
-    *   Create the main function that orchestrates the entire pipeline: from receiving crawled data to storing it in the database.
-    *   Integrate the pipeline with the existing crawler.
+## Next Steps
+- **Integrate Crawler with Ingestion Pipeline**: Modify the crawler to call `ingestData` for each crawled page, using real clients for embeddings and the database.
+- **Implement Real Services**: Create real implementations for the `EmbeddingGenerator` (using Together.ai) and `SupabaseClient` (using `@supabase/supabase-js`).
+- **Cron Job**: Set up the Vercel cron job to trigger the full crawl-and-ingest process.
 
 ## Deferred Crawler Enhancements
 - **Query Parameter Normalization**: Strip common tracking parameters from URLs to prevent duplicate content indexing.

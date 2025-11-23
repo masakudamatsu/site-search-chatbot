@@ -21,13 +21,15 @@
     - Filter out links with non-HTML extensions (PDFs, images, etc.).
     - Extract page metadata (title, description).
     - Correctly handle HTTP redirects to avoid duplicate processing.
+- A complete, TDD-built data ingestion pipeline (`src/lib/ingestion.ts`) that can:
+    - Split page content into chunks (`processPage`).
+    - Generate embeddings for each chunk (`generateEmbeddings`).
+    - Store the data in the database (`storeEmbeddings`).
+    - Orchestrate the full process (`ingestData`).
 
 ## What's Left to Build
-- **Data Ingestion Pipeline:**
-    - **Step 1: Foundational Setup:** Create the test suite, define data structures, and set up mock services.
-    - **Step 2: Content Processing:** Implement text splitting and embedding generation.
-    - **Step 3: Database Interaction:** Implement logic to store data in the vector database.
-    - **Step 4: Integration:** Orchestrate the pipeline and connect it to the crawler.
+- **Crawler/Ingestion Integration:** Connect the crawler to the ingestion pipeline and implement real clients for Supabase and Together.ai.
+- **Cron Job**: Set up the Vercel cron job to trigger the process.
 
 ## Deferred Tasks
 ### Web crawler
