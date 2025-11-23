@@ -23,8 +23,11 @@
     - Correctly handle HTTP redirects to avoid duplicate processing.
 
 ## What's Left to Build
-- **Data Pipeline:**
-    - The data ingestion pipeline to process and store crawled content.
+- **Data Ingestion Pipeline:**
+    - **Step 1: Foundational Setup:** Create the test suite, define data structures, and set up mock services.
+    - **Step 2: Content Processing:** Implement text splitting and embedding generation.
+    - **Step 3: Database Interaction:** Implement logic to store data in the vector database.
+    - **Step 4: Integration:** Orchestrate the pipeline and connect it to the crawler.
 
 ## Deferred Tasks
 ### Web crawler

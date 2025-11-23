@@ -10,8 +10,22 @@ With the core crawler functionality now robust, the immediate focus shifts to de
 - **Metadata Extraction**: Updated the crawler to extract page titles and meta descriptions.
 - **Redirect Handling**: The crawler now correctly handles HTTP redirects, storing content under the final canonical URL to prevent duplicates.
 
-## Next Steps
-- **Data Ingestion Pipeline**: Develop the pipeline to take crawled `PageData`, split it into chunks, generate embeddings, and store it in the vector database.
+## Next Steps: Implement the Data Ingestion Pipeline
+
+The development will proceed in four distinct steps, following a Test-Driven Development (TDD) approach.
+
+*   **Step 1: Foundational Setup**
+    *   Create a new test suite (`tests/integration/ingestion.spec.ts`) for the data ingestion logic.
+    *   Define the data structures for processed and chunked content.
+    *   Set up mock services for Supabase and the Together.ai embedding API to ensure fast and isolated tests.
+*   **Step 2: Content Processing**
+    *   Implement text splitting using LangChain.js.
+    *   Implement the embedding generation logic.
+*   **Step 3: Database Interaction**
+    *   Implement the logic to store the embeddings and content chunks in the Supabase vector database.
+*   **Step 4: Integration**
+    *   Create the main function that orchestrates the entire pipeline: from receiving crawled data to storing it in the database.
+    *   Integrate the pipeline with the existing crawler.
 
 ## Deferred Crawler Enhancements
 - **Query Parameter Normalization**: Strip common tracking parameters from URLs to prevent duplicate content indexing.
