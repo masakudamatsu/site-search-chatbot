@@ -61,3 +61,33 @@ export async function generateEmbeddings(
 
   return results;
 }
+
+export interface SupabaseClientInterface {
+  from: (table: string) => {
+    insert: (values: any[]) => Promise<{ error: any }>;
+  };
+}
+
+export const TABLE_NAME = "documents";
+
+export async function storeEmbeddings(
+  data: EmbeddingData[],
+  supabaseClient: SupabaseClientInterface
+): Promise<void> {
+  // Map the application data to the database schema
+  const rows = data.map((item) => ({
+    content: item.content,
+    embedding: item.embedding,
+    url: item.metadata.url,
+    title: item.metadata.title,
+    description: item.metadata.description,
+    last_modified: item.metadata.lastModified,
+    chunk_index: item.metadata.chunkIndex,
+  }));
+
+  const { error } = await supabaseClient.from(TABLE_NAME).insert(rows);
+
+  if (error) {
+    throw new Error(`Failed to store embeddings: ${error.message}`);
+  }
+}

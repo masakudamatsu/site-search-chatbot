@@ -2,8 +2,12 @@ import { test, expect } from "@playwright/test";
 import {
   generateEmbeddings,
   processPage,
+  storeEmbeddings,
+  EmbeddingData,
   EmbeddingGenerator,
   ProcessedChunk,
+  SupabaseClientInterface,
+  TABLE_NAME,
 } from "@/lib/ingestion";
 import { PageData } from "@/lib/crawler";
 import fs from "fs";
@@ -88,5 +92,55 @@ test.describe("Data Ingestion - Embedding Generation", () => {
     expect(results[1].embedding).toEqual(
       await mockGenerator(chunks[1].content)
     );
+  });
+});
+
+test.describe("Data Ingestion - Database Storage", () => {
+  test("should store embeddings in the database", async () => {
+    // 1. Arrange: Prepare sample data
+    const embeddingData: EmbeddingData[] = [
+      {
+        content: "Hello world",
+        embedding: [0.1, 0.2, 0.3],
+        metadata: {
+          url: "http://test.com",
+          title: "Test",
+          description: "Desc",
+          chunkIndex: 0,
+        },
+      },
+    ];
+
+    // Create a mock Supabase client
+    let insertedData: any[] | null = null;
+    let targetTable = "";
+
+    const mockSupabase: SupabaseClientInterface = {
+      from: (table: string) => {
+        targetTable = table;
+        return {
+          insert: async (data: any[]) => {
+            insertedData = data;
+            return { error: null };
+          },
+        };
+      },
+    };
+
+    // 2. Act
+    await storeEmbeddings(embeddingData, mockSupabase);
+
+    // 3. Assert
+    expect(targetTable).toBe(TABLE_NAME);
+    expect(insertedData).toBeTruthy();
+    expect(insertedData).toHaveLength(embeddingData.length);
+
+    // Verify the data structure matches what Supabase expects
+    // We expect the function to flatten the object for the DB (e.g., metadata columns)
+    // or store metadata as a JSONB column. For now, let's assume a direct mapping.
+    const row = insertedData![0];
+    expect(row.content).toBe(embeddingData[0].content);
+    expect(row.embedding).toEqual(embeddingData[0].embedding);
+    expect(row.url).toBe(embeddingData[0].metadata.url);
   });
 });
