@@ -5,6 +5,7 @@ export interface PageData {
   title: string;
   description: string;
   content: string;
+  lastModified?: string;
 }
 
 export async function crawlPage(url: string): Promise<PageData | null> {
