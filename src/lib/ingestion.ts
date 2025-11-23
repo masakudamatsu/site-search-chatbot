@@ -91,3 +91,13 @@ export async function storeEmbeddings(
     throw new Error(`Failed to store embeddings: ${error.message}`);
   }
 }
+
+export async function ingestData(
+  page: PageData,
+  generator: EmbeddingGenerator,
+  client: SupabaseClientInterface
+): Promise<void> {
+  const chunks = await processPage(page);
+  const embeddings = await generateEmbeddings(chunks, generator);
+  await storeEmbeddings(embeddings, client);
+}

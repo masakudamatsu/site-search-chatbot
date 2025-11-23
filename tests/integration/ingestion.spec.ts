@@ -8,6 +8,7 @@ import {
   ProcessedChunk,
   SupabaseClientInterface,
   TABLE_NAME,
+  ingestData,
 } from "@/lib/ingestion";
 import { PageData } from "@/lib/crawler";
 import fs from "fs";
@@ -142,5 +143,63 @@ test.describe("Data Ingestion - Database Storage", () => {
     expect(row.content).toBe(embeddingData[0].content);
     expect(row.embedding).toEqual(embeddingData[0].embedding);
     expect(row.url).toBe(embeddingData[0].metadata.url);
+  });
+});
+
+test.describe("Data Ingestion - Full Pipeline Integration", () => {
+  test("should ingest page data through the full pipeline", async () => {
+    // 1. Arrange
+    const filePath = path.join(
+      __dirname,
+      "../fixtures/steve_jobs_commencement.txt"
+    );
+    const speechContent = fs.readFileSync(filePath, "utf-8");
+
+    const samplePage: PageData = {
+      url: "https://example.com/speech",
+      title: "Steve Jobs Speech",
+      description: "A famous speech",
+      content: speechContent,
+    };
+
+    // Mock Generator
+    const mockVector = [0.1, 0.2, 0.3];
+    const mockGenerator: EmbeddingGenerator = async () => mockVector;
+
+    // Mock Supabase
+    let insertedData: any[] = [];
+    let targetTable = "";
+    const mockSupabase: SupabaseClientInterface = {
+      from: (table: string) => {
+        targetTable = table;
+        return {
+          insert: async (data: any[]) => {
+            insertedData = data;
+            return { error: null };
+          },
+        };
+      },
+    };
+
+    // 2. Act
+    await ingestData(samplePage, mockGenerator, mockSupabase);
+
+    // 3. Assert
+    // Verify table name
+    expect(targetTable).toBe(TABLE_NAME);
+
+    // Verify we got multiple rows (splitting worked)
+    expect(insertedData.length).toBeGreaterThan(1);
+
+    // Verify the data integrity of the first row
+    const firstRow = insertedData[0];
+    expect(firstRow.url).toBe(samplePage.url);
+    expect(firstRow.title).toBe(samplePage.title);
+
+    // Verify embedding was generated (integration with step 2)
+    expect(firstRow.embedding).toEqual(mockVector);
+
+    // Verify content is present
+    expect(firstRow.content).toBeTruthy();
   });
 });
