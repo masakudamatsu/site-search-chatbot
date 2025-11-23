@@ -1,5 +1,10 @@
 import { test, expect } from "@playwright/test";
-import { processPage } from "@/lib/ingestion";
+import {
+  generateEmbeddings,
+  processPage,
+  EmbeddingGenerator,
+  ProcessedChunk,
+} from "@/lib/ingestion";
 import { PageData } from "@/lib/crawler";
 import fs from "fs";
 import path from "path";
@@ -33,5 +38,55 @@ test.describe("Data Ingestion - Text Splitting", () => {
       title: samplePage.title,
       description: samplePage.description,
     });
+  });
+});
+
+test.describe("Data Ingestion - Embedding Generation", () => {
+  test("should generate embeddings for chunks", async () => {
+    // 1. Arrange: Prepare sample chunks
+    const chunks: ProcessedChunk[] = [
+      {
+        content: "Hello world",
+        metadata: {
+          url: "http://test.com",
+          title: "Test",
+          description: "Desc",
+          chunkIndex: 0,
+        },
+      },
+      {
+        content: "Second chunk",
+        metadata: {
+          url: "http://test.com",
+          title: "Test",
+          description: "Desc",
+          chunkIndex: 1,
+        },
+      },
+    ];
+
+    // Create a mock generator that returns a fixed vector
+    const mockGenerator: EmbeddingGenerator = async (text: string) => {
+      // In a real test, we might check if 'text' is valid
+      return [0.1, 0.2, 0.3];
+    };
+
+    // 2. Act: Generate embeddings
+    const results = await generateEmbeddings(chunks, mockGenerator);
+
+    // 3. Assert: Verify the results
+    expect(results.length).toBe(2);
+
+    // Check structure of first result
+    expect(results[0].content).toBe(chunks[0].content);
+    expect(results[0].embedding).toEqual(
+      await mockGenerator(chunks[0].content)
+    );
+    expect(results[0].metadata).toEqual(chunks[0].metadata);
+
+    // Check structure of second result
+    expect(results[1].embedding).toEqual(
+      await mockGenerator(chunks[1].content)
+    );
   });
 });
