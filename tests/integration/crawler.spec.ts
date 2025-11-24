@@ -92,31 +92,62 @@ test.describe("crawlWebsite()", () => {
   test("should crawl a website up to a specified limit", async () => {
     const startUrl = "http://info.cern.ch/";
     const numberOfPages = 5;
-    // Crawl only 5 pages to keep the test fast
-    const siteContent = await crawlWebsite(startUrl, numberOfPages);
 
-    // Check that we crawled a reasonable number of pages
-    expect(siteContent.size).toBe(numberOfPages);
+    // We'll use a Map to collect the pages during the crawl, restoring our ability to assert on content
+    const pages = new Map<string, any>();
+    const visited = await crawlWebsite(
+      startUrl,
+      numberOfPages,
+      async (page) => {
+        pages.set(page.url, page);
+      }
+    );
 
-    // Check that we have content from the start page
-    expect(siteContent.has(startUrl)).toBe(true);
-    expect(siteContent.get(startUrl)?.content).toContain("the first website");
+    // Check that we crawled the correct number of pages
+    expect(visited.size).toBeGreaterThanOrEqual(numberOfPages);
+    // CRITICAL ASSERTION: We must have successfully processed 'numberOfPages' valid pages
+    // This should fail if the crawler counts 404s against the limit
+    expect(pages.size).toBe(numberOfPages);
+
+    // Check that the start page was visited
+    expect(visited.has(startUrl)).toBe(true);
+    expect(pages.get(startUrl)?.content).toContain("the first website");
 
     // Check that we have content from a linked page
     const linkedPageUrl = "http://info.cern.ch/hypertext/WWW/TheProject.html";
-    expect(siteContent.has(linkedPageUrl)).toBe(true);
-    expect(siteContent.get(linkedPageUrl)?.content).toContain(
+    expect(visited.has(linkedPageUrl)).toBe(true);
+    expect(pages.get(linkedPageUrl)?.content).toContain(
       "The WorldWideWeb (W3)"
     );
   });
-  test("should store content under the final URL after redirect", async () => {
+
+  test("should call onPageCrawled for each discovered page", async () => {
+    const startUrl = "http://info.cern.ch/";
+    const numberOfPages = 3;
+    const crawledPages: string[] = [];
+
+    await crawlWebsite(startUrl, numberOfPages, async (page) => {
+      crawledPages.push(page.url);
+    });
+
+    // Check that the callback was called for each page
+    expect(crawledPages.length).toBe(numberOfPages);
+    // Check that the start page was processed
+    expect(crawledPages).toContain(startUrl);
+  });
+
+  test("should handle redirects correctly with callbacks", async () => {
     // Crawl just the one page (limit 1)
-    const siteContent = await crawlWebsite(redirectUrl.origin, 1);
-
-    // It should NOT be stored under the original URL
-    expect(siteContent.has(redirectUrl.origin)).toBe(false);
-
-    // It SHOULD be stored under the final URL
-    expect(siteContent.has(redirectUrl.destination)).toBe(true);
+    const pages = new Map<string, any>();
+    const visited = await crawlWebsite(redirectUrl.origin, 1, async (page) => {
+      pages.set(page.url, page);
+    });
+    // The processed PAGE content should only be associated with the final destination
+    // because crawlPage returns the final URL
+    expect(pages.has(redirectUrl.origin)).toBe(false);
+    expect(pages.has(redirectUrl.destination)).toBe(true);
+    // The visited Set tracks all URLs encountered, including redirects
+    expect(visited.has(redirectUrl.origin)).toBe(true);
+    expect(visited.has(redirectUrl.destination)).toBe(true);
   });
 });
