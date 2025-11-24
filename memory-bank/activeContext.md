@@ -1,7 +1,7 @@
 # Active Context
 
 ## Current Focus
-With the core crawler functionality now robust, the immediate focus shifts to developing the data ingestion pipeline to process and store the collected content.
+Integrate the crawler with the ingestion pipeline using real clients for Supabase and Together.ai.
 
 ## Recently Completed
 - **Data Ingestion Pipeline**:
@@ -17,9 +17,13 @@ With the core crawler functionality now robust, the immediate focus shifts to de
 - **Redirect Handling**: The crawler now correctly handles HTTP redirects, storing content under the final canonical URL to prevent duplicates.
 
 ## Next Steps
-- **Integrate Crawler with Ingestion Pipeline**: Modify the crawler to call `ingestData` for each crawled page, using real clients for embeddings and the database.
-- **Implement Real Services**: Create real implementations for the `EmbeddingGenerator` (using Together.ai) and `SupabaseClient` (using `@supabase/supabase-js`).
-- **Cron Job**: Set up the Vercel cron job to trigger the full crawl-and-ingest process.
+1.  **Dependencies**: Install `@supabase/supabase-js`.
+2.  **Enhance Crawler**: Update `crawlWebsite` in `src/lib/crawler.ts` to accept an optional `onPageCrawled` callback for immediate processing of crawled pages.
+3.  **Implement Real Services**:
+    - Create `src/lib/supabase.ts` to initialize and export the Supabase client.
+    - Create `src/lib/ai.ts` to configure the Together AI provider for embedding generation (using `baai/bge-large-en-v1.5`).
+4.  **Create Ingestion Endpoint**: Develop `src/app/api/ingest/route.ts` to orchestrate the entire crawl-and-ingest process.
+5.  **Set up Cron Job**: Configure a Vercel Cron Job to trigger the ingestion endpoint regularly.
 
 ## Deferred Crawler Enhancements
 - **Query Parameter Normalization**: Strip common tracking parameters from URLs to prevent duplicate content indexing.

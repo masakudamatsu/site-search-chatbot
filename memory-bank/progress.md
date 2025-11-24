@@ -28,7 +28,12 @@
     - Orchestrate the full process (`ingestData`).
 
 ## What's Left to Build
-- **Crawler/Ingestion Integration:** Connect the crawler to the ingestion pipeline and implement real clients for Supabase and Together.ai.
+- **Crawler/Ingestion Integration (In Progress):**
+    - Install `@supabase/supabase-js`.
+    - Enhance `crawlWebsite` in `src/lib/crawler.ts` with an `onPageCrawled` callback.
+    - Implement the Supabase client in `src/lib/supabase.ts`.
+    - Implement the Together AI embedding client in `src/lib/ai.ts`.
+    - Create an ingestion endpoint at `src/app/api/ingest/route.ts`.
 - **Cron Job**: Set up the Vercel cron job to trigger the process.
 
 ## Deferred Tasks
