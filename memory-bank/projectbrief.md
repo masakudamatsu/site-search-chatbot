@@ -33,7 +33,7 @@ Those who are familiar with ChatGPT and the like and want to use a similar user 
 - Tailwind CSS for styling
 - Playwright for webscraping both static HTML and JavaScript-injected contents
 - LangChain.js for text splitting
-- Replicate for embeddings and hosting LLM models (with Hugging Face Inference Endpoints as an alternative when this project is adapted for the contents-heavy website I will build)
+- Together.ai for embeddings and hosting LLM models (with Hugging Face Inference Endpoints as an alternative when this project is adapted for the contents-heavy website I will build)
 - Supabase pgvector for storing embeddings
 - GPT-OSS-20B for an open-source LLM model (as the default option)
 - Vercel AI SDK for streaming LLM's response
