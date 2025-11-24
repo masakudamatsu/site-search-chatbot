@@ -14,6 +14,7 @@ Defines the mandatory lifecycle for every task to ensure context awareness, user
 - **Code Drafting (Mandatory)**:
     - **Draft First**: Never start coding in Act Mode without a plan.
     - **Presentation**: Present the exact code or logic you intend to write. This allows the user to review or implement it themselves.
+    - **Code Snippet Format**: Do not include the code before revision wrapped with `------- SEARCH` and `=======`.
 - **Transition Condition**: Do NOT request to switch to Act Mode until the user has approved the Code Draft.
 
 ## 4. Execution Phase (Act Mode)
