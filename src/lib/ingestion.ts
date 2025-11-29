@@ -64,7 +64,7 @@ export async function generateEmbeddings(
 
 export interface SupabaseClientInterface {
   from: (table: string) => {
-    insert: (values: any[]) => Promise<{ error: any }>;
+    insert: (values: any[]) => PromiseLike<{ error: any }>;
   };
 }
 
