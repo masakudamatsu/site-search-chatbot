@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { supabase } from "@/lib/supabase";
 
 test.describe("Supabase Client Integration", () => {
-  test.only("should connect to Supabase and perform a query", async () => {
+  test("should connect to Supabase and perform a query", async () => {
     // Perform a lightweight count query on the 'documents' table
     // "head: true" means we only want the metadata (count), not the actual rows
     const { count, error } = await supabase
