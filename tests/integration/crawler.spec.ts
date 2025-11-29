@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, chromium, Browser } from "@playwright/test";
 import { crawlPage, crawlWebsite, extractLinks } from "@/lib/crawler";
 
 const pageWithMain = "https://www.wikipedia.org";
@@ -11,8 +11,18 @@ const redirectUrl = {
     "https://www.export-japan.co.jp/solution_services/text_production/",
 };
 test.describe("crawlPage()", () => {
+  let browser: Browser;
+
+  test.beforeAll(async () => {
+    browser = await chromium.launch();
+  });
+
+  test.afterAll(async () => {
+    await browser.close();
+  });
+
   test("should extract content from the <main> tag", async () => {
-    const result = await crawlPage(pageWithMain);
+    const result = await crawlPage(browser, pageWithMain);
 
     expect(result).not.toBeNull();
     // Check for content that is definitely in <main>
@@ -23,7 +33,7 @@ test.describe("crawlPage()", () => {
   });
 
   test("should fall back to the <body> tag if <main> does not exist", async () => {
-    const result = await crawlPage(pageWithoutMain);
+    const result = await crawlPage(browser, pageWithoutMain);
 
     expect(result).not.toBeNull();
     // Check for content that is definitely in <body>
@@ -35,12 +45,12 @@ test.describe("crawlPage()", () => {
   test("should return empty content for a 404 page", async () => {
     // This is a known dead link on the site
     const url = "https://info.cern.ch/hypertext/WWW/TkWWW/BUGS";
-    const result = await crawlPage(url);
+    const result = await crawlPage(browser, url);
     expect(result).toBeNull();
   });
 
   test("should extract title and meta description", async () => {
-    const result = await crawlPage(pageWithMain);
+    const result = await crawlPage(browser, pageWithMain);
 
     expect(result).not.toBeNull();
     // Wikipedia's title usually contains "Wikipedia"
@@ -50,7 +60,7 @@ test.describe("crawlPage()", () => {
   });
 
   test("should follow redirects and return the final URL", async () => {
-    const result = await crawlPage(redirectUrl.origin);
+    const result = await crawlPage(browser, redirectUrl.origin);
 
     expect(result).not.toBeNull();
     // The returned URL should be the one after redirect
@@ -59,9 +69,19 @@ test.describe("crawlPage()", () => {
 });
 
 test.describe("extractLinks()", () => {
+  let browser: Browser;
+
+  test.beforeAll(async () => {
+    browser = await chromium.launch();
+  });
+
+  test.afterAll(async () => {
+    await browser.close();
+  });
+
   test("should extract internal links and exclude external ones", async () => {
     const url = "http://info.cern.ch";
-    const links = await extractLinks(url);
+    const links = await extractLinks(browser, url);
 
     // Check that an internal link is included
     expect(links).toContain(
@@ -74,7 +94,7 @@ test.describe("extractLinks()", () => {
 
   test("should strip URL fragments from extracted links", async () => {
     const url = "http://info.cern.ch/hypertext/WWW/TheProject.html";
-    const links = await extractLinks(url);
+    const links = await extractLinks(browser, url);
 
     for (const link of links) {
       expect(link).not.toContain("#");
@@ -82,7 +102,7 @@ test.describe("extractLinks()", () => {
   });
 
   test("should exclude PDF links", async () => {
-    const links = await extractLinks(pageWithPdfLinks);
+    const links = await extractLinks(browser, pageWithPdfLinks);
     // Should NOT find the PDF
     expect(links.some((link) => link.endsWith(".pdf"))).toBe(false);
   });
