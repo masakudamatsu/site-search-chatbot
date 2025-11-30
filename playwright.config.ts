@@ -13,6 +13,7 @@ dotenv.config({ path: path.resolve(__dirname, ".env.local") });
  */
 export default defineConfig({
   testDir: "./tests",
+  testMatch: ["/e2e/**/*.spec.ts", "/integration/**/*.spec.ts"],
   /* Maximum time (ms) one test can run for. */
   timeout: 90 * 1000,
   /* Run tests in files in parallel */
