@@ -12,6 +12,11 @@ To achieve the primary goal, we are implementing the following features in seque
     *   Create a new Playwright test to verify the entire UI-driven ingestion and Q&A flow.
 
 ## Recently Completed
+- **Database Schema Synchronization:**
+    *   Confirmed the live Supabase database uses a flat schema for the `documents` table (columns: `url`, `title`, etc., instead of a `metadata` JSONB column).
+    *   Updated `supabase/match_documents.sql` to reflect the correct function definition for this flat schema.
+    *   Created `supabase/schema.sql` to document the table definition and extension setup.
+    *   Updated `src/lib/ai.ts` and its tests to correctly handle the flat data structure returned by the database.
 - **Implement Vector Search Logic:**
     *   Created the `match_documents` SQL function and stored it in the repository.
     *   Implemented the `getRelevantContext` function in `lib/ai.ts`.

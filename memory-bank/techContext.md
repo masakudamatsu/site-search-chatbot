@@ -18,6 +18,7 @@
 
 ## Database Schema
 - **SQL Scripts:** Custom SQL, such as function definitions, is stored in the `supabase/` directory. These scripts should be applied manually via the Supabase SQL Editor to keep the live database schema in sync with the repository.
+- **Table Structure:** The `documents` table uses a flat schema where metadata fields (url, title, description, etc.) are stored as individual columns, rather than in a single JSONB column.
 
 ## Development & Testing
 - **E2E & Visual Regression Testing:** Playwright

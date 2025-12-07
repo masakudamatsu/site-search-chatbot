@@ -47,11 +47,11 @@ describe("AI Library", () => {
       const mockRpcData = [
         {
           content: "This is the first document.",
-          metadata: { url: "https://example.com/page1" },
+          url: "https://example.com/page1",
         },
         {
           content: "This is the second document.",
-          metadata: { url: "https://example.com/page2" },
+          url: "https://example.com/page2",
         },
       ];
       const expectedOutput = `###Source URL: https://example.com/page1

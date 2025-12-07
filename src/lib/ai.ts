@@ -44,6 +44,6 @@ export async function getRelevantContext(message: string): Promise<string> {
 
   // 3. Format the context into a single string to inject into the AI prompt
   return data
-    .map((doc: any) => `###Source URL: ${doc.metadata.url}\n${doc.content}`)
+    .map((doc: any) => `###Source URL: ${doc.url}\n${doc.content}`)
     .join("\n\n---\n\n");
 }
