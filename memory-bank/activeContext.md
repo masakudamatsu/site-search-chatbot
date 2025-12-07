@@ -35,6 +35,7 @@ To achieve the primary goal, we are implementing the following features in seque
     - Developed the core recursive crawling, content extraction, link discovery, and redirect handling logic.
 
 ## Post-Prototype Enhancements
+- **Refactor Integration Tests**: Convert the remaining Playwright-based integration tests in `tests/integration` to use Vitest for consistency and better mocking capabilities.
 - **Streaming Ingestion UI**: Refactor the ingestion process to use a streaming response, providing real-time progress updates (e.g., "Crawled 5 of 50 pages") to the user.
 - **Automated Ingestion**: Set up a Vercel Cron Job to trigger the `/api/ingest` endpoint on a schedule.
 - **Crawler Robustness**:
