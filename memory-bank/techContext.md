@@ -16,6 +16,9 @@
 - **Deployment:** Vercel
 - **Scheduled Jobs:** Vercel Cron Jobs
 
+## Database Schema
+- **SQL Scripts:** Custom SQL, such as function definitions, is stored in the `supabase/` directory. These scripts should be applied manually via the Supabase SQL Editor to keep the live database schema in sync with the repository.
+
 ## Development & Testing
 - **E2E & Visual Regression Testing:** Playwright
 - **Test Execution:** The project has two primary test scripts:

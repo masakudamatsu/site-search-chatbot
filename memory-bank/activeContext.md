@@ -6,15 +6,16 @@ Our top priority is to finish building a usable, self-contained prototype of the
 ## Current Focus Chain
 To achieve the primary goal, we are implementing the following features in sequence:
 
-1.  **Implement Vector Search Logic (Current Focus):**
-    *   Create the `match_documents` SQL function in the database.
-    *   Create a function in the application to handle question embedding and call the new SQL function.
-2.  **Integrate RAG into the Chat API:**
-    *   Modify the chat API to use the vector search function and inject the retrieved context into the LLM prompt.
-3.  **Write Full E2E Test:**
-    *   Expand the UI test to perform a real ingestion and verify the end-to-end Q&A flow.
-    *   Modify the chat API to use the vector search function and inject the retrieved context into the LLM prompt.
+1.  **Integrate RAG into the Chat API (Current Focus):**
+    *   Modify the chat API to use the `getRelevantContext` function and inject the retrieved context into the LLM prompt.
+2.  **Write Full E2E Test:**
+    *   Create a new Playwright test to verify the entire UI-driven ingestion and Q&A flow.
+
 ## Recently Completed
+- **Implement Vector Search Logic:**
+    *   Created the `match_documents` SQL function and stored it in the repository.
+    *   Implemented the `getRelevantContext` function in `lib/ai.ts`.
+    *   Set up Vitest for integration testing and wrote a comprehensive, mocked test suite for the AI library.
 - **Write E2E Test for Ingestion UI:**
     *   Created a Playwright test to verify the new UI components.
     *   Mocked the `/api/ingest` endpoint to test the UI's response to different states (loading, success, error).
