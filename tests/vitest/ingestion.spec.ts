@@ -86,7 +86,7 @@ const createMockSupabaseClient = () => {
     }),
   };
 
-  return { client, insertMock, deleteMock };
+  return { client, insertMock, eqMock, deleteMock };
 };
 
 describe("Ingestion Pipeline", () => {
@@ -139,6 +139,22 @@ describe("Ingestion Pipeline", () => {
       embedding: sampleEmbeddingData[0].embedding,
       url: sampleEmbeddingData[0].metadata.url,
     });
+  });
+
+  test("Step 3b: Database Storage (Deduplication)", async () => {
+    const { client, deleteMock, eqMock } = createMockSupabaseClient();
+
+    await storeEmbeddings(sampleEmbeddingData, client);
+
+    // Verify that delete was called on the table
+    expect(client.from).toHaveBeenCalledWith(TABLE_NAME);
+    expect(deleteMock).toHaveBeenCalled();
+
+    // Verify that eq was called with the correct column and URL
+    expect(eqMock).toHaveBeenCalledWith(
+      "url",
+      sampleEmbeddingData[0].metadata.url
+    );
   });
 
   test("Step 4: Full Integration", async () => {

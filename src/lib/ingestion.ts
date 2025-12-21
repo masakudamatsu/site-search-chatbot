@@ -65,6 +65,9 @@ export async function generateEmbeddings(
 export interface SupabaseClientInterface {
   from: (table: string) => {
     insert: (values: any[]) => PromiseLike<{ error: any }>;
+    delete: () => {
+      eq: (column: string, value: any) => PromiseLike<{ error: any }>;
+    };
   };
 }
 
@@ -74,6 +77,22 @@ export async function storeEmbeddings(
   data: EmbeddingData[],
   supabaseClient: SupabaseClientInterface
 ): Promise<void> {
+  if (data.length === 0) return;
+
+  const url = data[0].metadata.url;
+
+  // Delete existing embeddings for this URL to avoid duplicates
+  const { error: deleteError } = await supabaseClient
+    .from(TABLE_NAME)
+    .delete()
+    .eq("url", url);
+
+  if (deleteError) {
+    throw new Error(
+      `Failed to delete existing embeddings: ${deleteError.message}`
+    );
+  }
+
   // Map the application data to the database schema
   const rows = data.map((item) => ({
     content: item.content,
