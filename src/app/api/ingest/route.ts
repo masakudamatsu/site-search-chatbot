@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 
 export async function POST(request: Request) {
   try {
-    const { baseUrl, limit = 10 } = await request.json();
+    const { baseUrl, limit = 45 } = await request.json();
 
     if (!baseUrl) {
       return NextResponse.json(
