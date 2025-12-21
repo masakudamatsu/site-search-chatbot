@@ -11,10 +11,16 @@ The application will be a monolithic Next.js application, containing both the fr
     - **Checksum:** For pages with new dates, the content is downloaded, and a checksum (hash) is calculated.
     - **Embedding:** If the checksum differs from the stored one, the new content is sent to the Together.ai API to generate embeddings.
 4.  **Storage:** The generated embeddings and the corresponding page content are stored in a Supabase pgvector database.
+    - **Deduplication:** Before inserting new embeddings for a page, existing embeddings for that URL are deleted to prevent duplication.
 
 ## Query and Response Flow
 1.  **User Input:** The user sends a question through the Next.js frontend.
 2.  **Embedding:** The backend creates an embedding of the user's question using the Together.ai API.
-3.  **Vector Search:** The backend queries the Supabase pgvector database to find the most relevant text chunks from the website content based on the question embedding.
+3.  **Vector Search:** The backend queries the Supabase pgvector database to find the most relevant text chunks.
+    - **Parameters:** It uses a `match_threshold` of 0.5 and retrieves the top 10 matches to ensure diversity and inclusion of specific but lower-ranked documents (e.g. lists of names).
 4.  **LLM Prompting:** The user's question, the chat history, and the retrieved text chunks are formatted into a prompt for the `gpt-oss-20b` model hosted on Together.ai.
+    - **System Prompt:** Explicitly instructs the LLM to cite sources using Markdown links and attributes information strictly to the provided chunk's source URL.
 5.  **Streaming Response:** The response from the LLM is streamed back to the user interface using the Vercel AI SDK, providing a real-time, interactive experience.
+
+## Testing Patterns
+- **Parallel E2E Testing:** To avoid database collisions in parallel workers (where multiple tests might ingest data for the same URL simultaneously), we inject **unique identifiers** into both the ingested content and the test query. This ensures that the RAG retrieval finds the specific document ingested by that worker, even if other workers have ingested similar content.
