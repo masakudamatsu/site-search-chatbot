@@ -16,6 +16,13 @@ export default function Home() {
     transport: new DefaultChatTransport({ api: "/api/chat" }),
   });
 
+  const handleSendMessage = (message: { text: string }) => {
+    sendMessage({
+      role: "user",
+      parts: [{ type: "text", text: message.text }],
+    });
+  };
+
   const handleIngest = async () => {
     if (!ingestionUrl) {
       setIngestionStatus("Please enter a URL.");
@@ -98,7 +105,7 @@ export default function Home() {
 
           <div className="w-full max-w-2xl p-4">
             <ChatInput
-              onSendMessage={sendMessage}
+              onSendMessage={handleSendMessage}
               isLoading={isLoading}
               stop={stop}
             />
@@ -117,7 +124,7 @@ export default function Home() {
           </div>
           <div className="w-full max-w-2xl self-center p-4">
             <ChatInput
-              onSendMessage={sendMessage}
+              onSendMessage={handleSendMessage}
               isLoading={isLoading}
               stop={stop}
             />

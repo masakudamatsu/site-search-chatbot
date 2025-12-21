@@ -30,7 +30,8 @@ export async function getRelevantContext(message: string): Promise<string> {
   // 2. Query the database for relevant documents
   const { data, error } = await supabase.rpc("match_documents", {
     query_embedding: queryEmbedding,
-    match_count: 5, // Return top 5 matches
+    match_threshold: 0.5,
+    match_count: 10, // Return top 10 matches
   });
 
   if (error) {

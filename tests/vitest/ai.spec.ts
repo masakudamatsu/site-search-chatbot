@@ -86,7 +86,8 @@ This is the second document.`;
       // Verify Supabase RPC was called with the mocked embedding
       expect(supabase.rpc).toHaveBeenCalledWith("match_documents", {
         query_embedding: mockEmbedding,
-        match_count: 5,
+        match_threshold: 0.5,
+        match_count: 10,
       });
 
       expect(context.trim()).toBe(expectedOutput.trim());
