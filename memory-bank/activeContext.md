@@ -6,11 +6,15 @@ Our top priority is to finish building a usable, self-contained prototype of the
 ## Current Focus Chain
 We are transitioning from the prototype phase to a more robust, production-ready system.
 
-1.  **Implement Smart Ingestion & Automation (Next Task):**
-    *   Move the target URL configuration to environment variables (`TARGET_URL`).
-    *   Implement "Smart Updates" (Date Check & Content Checksum) to optimize ingestion cost and time.
-    *   Set up Vercel Cron Job for automated periodic ingestion.
-    *   Secure the ingestion API endpoint.
+1.  **Implement Smart Ingestion & Automation (Current Focus):**
+    *   **Goal**: Optimize ingestion to skip unchanged pages and automate the process.
+    *   **Plan**:
+        *   **Database**: Create `crawled_pages` table (`url`, `last_modified`, `content_hash`) to track page state.
+        *   **Crawler**: Update `src/lib/crawler.ts` to capture the `Last-Modified` HTTP header.
+        *   **Ingestion Logic**: Update `src/lib/ingestion.ts` to implement a two-step check (Date & Checksum) before re-embedding.
+        *   **API**: Secure `/api/ingest` with `CRON_SECRET` and use `TARGET_URL` from environment variables.
+        *   **Automation**: Create `vercel.json` to schedule the cron job (e.g., daily).
+        *   **Frontend**: Remove the manual "Load Website" UI.
 2.  **Enhance Answer Quality:**
     *   Implement **Context Enrichment** (prepending page titles to chunks) to improve RAG precision.
 3.  **Cleanup:**

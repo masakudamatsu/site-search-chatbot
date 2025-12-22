@@ -4,14 +4,17 @@
 The application will be a monolithic Next.js application, containing both the frontend chat interface and the backend services for crawling, embedding, and querying. This integrated approach is suitable for the proof-of-concept and allows for future modularization.
 
 ## Web Crawling and Data Ingestion
-1.  **Initiation:** A Vercel Cron Job triggers the crawling process periodically.
-2.  **Crawling:** A Playwright-based crawler starts at the provided homepage URL. It navigates through the website, respecting `robots.txt` and staying within the same domain. It extracts the textual content from each page, handling JavaScript-rendered content.
-3.  **Content Update Strategy:**
-    - **Date Check:** The crawler first checks for `Last-Modified` headers or meta tags to quickly identify unchanged pages.
-    - **Checksum:** For pages with new dates, the content is downloaded, and a checksum (hash) is calculated.
-    - **Embedding:** If the checksum differs from the stored one, the new content is sent to the Together.ai API to generate embeddings.
-4.  **Storage:** The generated embeddings and the corresponding page content are stored in a Supabase pgvector database.
-    - **Deduplication:** Before inserting new embeddings for a page, existing embeddings for that URL are deleted to prevent duplication.
+1.  **Initiation:** A Vercel Cron Job (configured via `vercel.json` and secured with `CRON_SECRET`) triggers the crawling process periodically.
+2.  **Crawling:** A Playwright-based crawler starts at the `TARGET_URL`. It navigates through the website, respecting `robots.txt` and staying within the same domain. It extracts the textual content and `Last-Modified` headers from each page.
+3.  **Smart Ingestion Strategy:**
+    - **Tracking:** A `crawled_pages` table stores the `url`, `last_modified` header, and `content_hash` for every processed page.
+    - **Date Check:** Before processing, the system checks if the `Last-Modified` header matches the stored value. If it matches, the page is skipped.
+    - **Checksum Check:** If the date differs (or is missing), the system computes a SHA-256 hash of the page content. If this hash matches the stored `content_hash`, the page is skipped to save embedding costs.
+    - **Re-embedding:** Only if both checks fail (implying new or changed content) does the system generate embeddings using the Together.ai API.
+4.  **Storage:**
+    - **Embeddings:** Stored in the `documents` table (pgvector).
+    - **State:** Page metadata is updated in the `crawled_pages` table.
+    - **Deduplication:** Existing embeddings for the URL are deleted before inserting new ones.
 
 ## Query and Response Flow
 1.  **User Input:** The user sends a question through the Next.js frontend.
