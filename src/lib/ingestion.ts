@@ -1,5 +1,6 @@
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { PageData } from "./crawler";
+import { createHash } from "crypto"; // Import crypto for hashing
 
 export interface ProcessedChunk {
   content: string;
@@ -62,16 +63,65 @@ export async function generateEmbeddings(
   return results;
 }
 
+// Updated interface to support 'select', 'single', and 'upsert'
 export interface SupabaseClientInterface {
   from: (table: string) => {
     insert: (values: any[]) => PromiseLike<{ error: any }>;
     delete: () => {
       eq: (column: string, value: any) => PromiseLike<{ error: any }>;
     };
+    select: (columns: string) => {
+      eq: (
+        column: string,
+        value: any
+      ) => {
+        single: () => PromiseLike<{ data: any; error: any }>;
+      };
+    };
+    upsert: (values: any) => PromiseLike<{ error: any }>;
   };
 }
 
 export const TABLE_NAME = "documents";
+export const CRAWLED_PAGES_TABLE = "crawled_pages";
+
+export function computeChecksum(content: string): string {
+  return createHash("sha256").update(content).digest("hex");
+}
+
+export async function shouldIngestPage(
+  page: PageData,
+  client: SupabaseClientInterface
+): Promise<boolean> {
+  // Check if we have an existing record for this URL
+  const { data, error } = await client
+    .from(CRAWLED_PAGES_TABLE)
+    .select("*")
+    .eq("url", page.url)
+    .single();
+
+  // If no record exists or error, default to ingesting
+  if (error || !data) {
+    return true;
+  }
+
+  // 1. Date Check: If lastModified header matches stored value, skip.
+  if (
+    page.lastModified &&
+    data.last_modified &&
+    page.lastModified === data.last_modified
+  ) {
+    return false;
+  }
+
+  // 2. Checksum Check: If content hash matches, skip.
+  const currentHash = computeChecksum(page.content);
+  if (data.content_hash === currentHash) {
+    return false;
+  }
+
+  return true;
+}
 
 export async function storeEmbeddings(
   data: EmbeddingData[],
@@ -111,12 +161,46 @@ export async function storeEmbeddings(
   }
 }
 
+export async function updateCrawledPage(
+  page: PageData,
+  client: SupabaseClientInterface
+): Promise<void> {
+  const content_hash = computeChecksum(page.content);
+
+  // Upsert the record in crawled_pages
+  const { error } = await client.from(CRAWLED_PAGES_TABLE).upsert({
+    url: page.url,
+    last_modified: page.lastModified,
+    content_hash,
+    last_crawled_at: new Date().toISOString(),
+  });
+
+  if (error) {
+    console.warn(`Failed to update crawled_pages for ${page.url}:`, error);
+  }
+}
+
 export async function ingestData(
   page: PageData,
   generator: EmbeddingGenerator,
   client: SupabaseClientInterface
 ): Promise<void> {
+  // 1. Smart Check
+  const shouldIngest = await shouldIngestPage(page, client);
+  if (!shouldIngest) {
+    console.log(`Skipping unchanged page: ${page.url}`);
+    // Even if we skip, we might want to touch 'last_crawled_at'.
+    // For now, we skip entirely to save DB calls.
+    return;
+  }
+
+  // 2. Process & Embed
   const chunks = await processPage(page);
   const embeddings = await generateEmbeddings(chunks, generator);
+
+  // 3. Store Data
   await storeEmbeddings(embeddings, client);
+
+  // 4. Update Tracking Table
+  await updateCrawledPage(page, client);
 }

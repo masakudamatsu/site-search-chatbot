@@ -13,6 +13,7 @@ import {
 import { PageData } from "@/lib/crawler";
 import fs from "fs";
 import path from "path";
+import { createHash } from "crypto";
 
 // --- Shared Test Data ---
 
@@ -78,15 +79,21 @@ const createMockSupabaseClient = () => {
   const insertMock = vi.fn().mockResolvedValue({ error: null });
   const eqMock = vi.fn().mockResolvedValue({ error: null });
   const deleteMock = vi.fn().mockReturnValue({ eq: eqMock });
+  const singleMock = vi.fn().mockResolvedValue({ data: null, error: null });
+  const selectEqMock = vi.fn().mockReturnValue({ single: singleMock });
+  const selectMock = vi.fn().mockReturnValue({ eq: selectEqMock });
+  const upsertMock = vi.fn().mockResolvedValue({ error: null });
 
   const client: SupabaseClientInterface = {
     from: vi.fn().mockReturnValue({
       insert: insertMock,
       delete: deleteMock,
+      select: selectMock, // For checking existing page
+      upsert: upsertMock, // For updating crawl status
     }),
   };
 
-  return { client, insertMock, eqMock, deleteMock };
+  return { client, insertMock, eqMock, deleteMock, singleMock, upsertMock };
 };
 
 describe("Ingestion Pipeline", () => {
@@ -179,5 +186,103 @@ describe("Ingestion Pipeline", () => {
     expect(firstRow.title).toBe(samplePage.title);
     expect(firstRow.embedding).toEqual(mockVector);
     expect(firstRow.content).toBeTruthy();
+  });
+});
+
+describe("Smart Ingestion Logic", () => {
+  test("should skip ingestion if Last-Modified header matches", async () => {
+    const { client, insertMock, singleMock } = createMockSupabaseClient();
+    const pageWithDate = {
+      ...samplePage,
+      lastModified: "Wed, 21 Oct 2015 07:28:00 GMT",
+    };
+    // Calculate expected hash for the sample content
+    const hash = createHash("sha256").update(samplePage.content).digest("hex");
+    // Mock existing record in 'crawled_pages' with the SAME date and hash
+    singleMock.mockResolvedValue({
+      data: {
+        last_modified: pageWithDate.lastModified,
+        content_hash: hash,
+      },
+      error: null,
+    });
+
+    await ingestData(pageWithDate, mockGenerator, client);
+
+    // Verify we checked the tracking table
+    expect(client.from).toHaveBeenCalledWith("crawled_pages");
+
+    // Verify we skipped the expensive embedding/insertion step
+    expect(insertMock).not.toHaveBeenCalled();
+  });
+
+  test("should skip ingestion if content hash matches (even if date differs)", async () => {
+    const { client, insertMock, singleMock } = createMockSupabaseClient();
+
+    // Calculate expected hash for the sample content
+    const hash = createHash("sha256").update(samplePage.content).digest("hex");
+
+    // Mock existing record with SAME hash but DIFFERENT date
+    singleMock.mockResolvedValue({
+      data: {
+        last_modified: "Old Date",
+        content_hash: hash,
+      },
+      error: null,
+    });
+
+    await ingestData(samplePage, mockGenerator, client);
+
+    // Should still skip because content is identical
+    expect(insertMock).not.toHaveBeenCalled();
+  });
+
+  test("should proceed and update crawl status if it is a new page", async () => {
+    const { client, insertMock, upsertMock, singleMock } =
+      createMockSupabaseClient();
+
+    // Mock NO existing record (new page) or mismatched data
+    singleMock.mockResolvedValue({ data: null, error: null });
+
+    await ingestData(samplePage, mockGenerator, client);
+
+    // 1. Should insert embeddings (process happened)
+    expect(insertMock).toHaveBeenCalled();
+
+    // 2. Should update crawled_pages with new state
+    expect(upsertMock).toHaveBeenCalled();
+
+    // Verify the update payload
+    const upsertArgs = upsertMock.mock.calls[0][0];
+    expect(upsertArgs.url).toBe(samplePage.url);
+    expect(upsertArgs.content_hash).toBeDefined();
+    expect(upsertArgs.last_crawled_at).toBeDefined();
+  });
+
+  test("should proceed and update crawl status if content changed", async () => {
+    const { client, insertMock, upsertMock, singleMock } =
+      createMockSupabaseClient();
+
+    // Mock changed contents
+    singleMock.mockResolvedValue({
+      data: {
+        last_modified: "Old Date",
+        content_hash: "DifferentHash",
+      },
+      error: null,
+    });
+    await ingestData(samplePage, mockGenerator, client);
+
+    // 1. Should insert embeddings (process happened)
+    expect(insertMock).toHaveBeenCalled();
+
+    // 2. Should update crawled_pages with new state
+    expect(upsertMock).toHaveBeenCalled();
+
+    // Verify the update payload
+    const upsertArgs = upsertMock.mock.calls[0][0];
+    expect(upsertArgs.url).toBe(samplePage.url);
+    expect(upsertArgs.content_hash).toBeDefined();
+    expect(upsertArgs.last_crawled_at).toBeDefined();
   });
 });
