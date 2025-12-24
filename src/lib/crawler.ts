@@ -29,25 +29,30 @@ export async function crawlPage(
     }
     // Capture the final URL (after any redirects)
     const finalUrl = response.url();
+    const lastModified = response.headers()["last-modified"]; // to check whether to crawl again
 
-    const data = await page.evaluate((finalUrl) => {
-      const main = document.querySelector("main");
-      const content = main ? main.innerText : document.body.innerText;
-      const title = document.title;
-      const metaDescription = document.querySelector(
-        'meta[name="description"]'
-      );
-      const description = metaDescription
-        ? (metaDescription as HTMLMetaElement).content
-        : "";
+    const data = await page.evaluate(
+      ({ finalUrl, lastModified }) => {
+        const main = document.querySelector("main");
+        const content = main ? main.innerText : document.body.innerText;
+        const title = document.title;
+        const metaDescription = document.querySelector(
+          'meta[name="description"]'
+        );
+        const description = metaDescription
+          ? (metaDescription as HTMLMetaElement).content
+          : "";
 
-      return {
-        url: finalUrl,
-        title,
-        description,
-        content,
-      };
-    }, finalUrl);
+        return {
+          url: finalUrl,
+          title,
+          description,
+          content,
+          lastModified,
+        };
+      },
+      { finalUrl, lastModified }
+    );
 
     return data;
   } catch (error) {
