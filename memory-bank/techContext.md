@@ -38,3 +38,16 @@
   - `extractLinks(url)`: Parses a page to find all unique, internal, absolute URLs, excluding fragments.
   - `crawlWebsite(startUrl, limit)`: Orchestrates the entire crawl, managing a queue of URLs to visit and aggregating content.
 - **Testing (`tests/integration/crawler.spec.ts`):** An integration test suite verifies the functionality of the crawler functions against live websites.
+
+## Coding Standards & References
+The following standards files act as strict reference documentation. **Before writing code for any of these technologies, you MUST read the corresponding standard file in `docs/standards/`.**
+
+- **LangChain:** `docs/standards/langchain.md`
+- **Next.js:** `docs/standards/nextjs.md`
+- **Playwright:** `docs/standards/playwright.md`
+- **React Markdown:** `docs/standards/react-markdown.md`
+- **Supabase:** `docs/standards/supabase.md`
+- **Tailwind CSS:** `docs/standards/tailwindcss.md`
+- **Together AI:** `docs/standards/together-ai.md`
+- **Vercel AI SDK:** `docs/standards/vercel-ai-sdk.md`
+- **Vercel Cron Jobs:** `docs/standards/vercel-cron-jobs.md`
