@@ -30,7 +30,7 @@
  
 
 ## Development Methodology
-- **Test-Driven Development (TDD):** The project will follow a TDD approach. For each new feature, a failing test (primarily using Playwright for end-to-end testing) will be written first. The implementation code will then be developed to make the test pass, followed by an optional refactoring step.
+- **Test-Driven Development (TDD):** The project strictly follows a TDD approach as defined in `.clinerules/06-tdd-workflow.md`. For each new feature, a failing test must be written first (Red), followed by the minimal implementation to pass the test (Green), and finally code cleanup (Refactor).
 
 ## Web Crawler Implementation
 - **Core Logic (`src/lib/crawler.ts`):**
