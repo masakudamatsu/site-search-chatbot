@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     // Start crawling with the ingestion callback
     const visited = await crawlWebsite(targetUrl, limit, async (page) => {
       console.log(`Ingesting page: ${page.url}`);
-      await ingestData(page, generateEmbedding, supabase);
+      await ingestData(page, generateEmbedding, supabase as any);
     });
 
     return NextResponse.json({
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
     // Start crawling with the ingestion callback
     const visited = await crawlWebsite(baseUrl, limit, async (page) => {
       console.log(`Ingesting page: ${page.url}`);
-      await ingestData(page, generateEmbedding, supabase);
+      await ingestData(page, generateEmbedding, supabase as any);
     });
 
     return NextResponse.json({
