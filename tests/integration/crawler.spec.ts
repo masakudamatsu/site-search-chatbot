@@ -106,6 +106,15 @@ test.describe("extractLinks()", () => {
     // Should NOT find the PDF
     expect(links.some((link) => link.endsWith(".pdf"))).toBe(false);
   });
+
+  test("should exclude links with different ports (origins)", async () => {
+    const url = "http://info.cern.ch";
+    const links = await extractLinks(browser, url);
+    // Should NOT find the link with port 8001 even though it starts with the same hostname
+    expect(links).not.toContain(
+      "http://info.cern.ch:8001/nnsc.nsf.net:210/internet-resource-guide?library"
+    );
+  });
 });
 
 test.describe("crawlWebsite()", () => {

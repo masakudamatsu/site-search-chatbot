@@ -19,7 +19,10 @@ export async function crawlPage(
 
   const page = await browser.newPage();
   try {
-    const response = await page.goto(url, { waitUntil: "domcontentloaded" });
+    const response = await page.goto(url, {
+      waitUntil: "domcontentloaded",
+      timeout: 10000, // reduced from the default 30000ms
+    });
 
     // Check if the page loaded successfully
     if (!response || !response.ok()) {
@@ -108,8 +111,8 @@ export async function extractLinks(
           continue;
         }
 
-        // Keep link URLs only if it's in the same domain
-        if (absoluteUrl.startsWith(pageOrigin)) {
+        // Keep link URLs only if it's in the same origin
+        if (urlObj.origin === pageOrigin) {
           internalLinks.add(absoluteUrl);
         }
       }
