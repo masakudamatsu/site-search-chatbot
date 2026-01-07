@@ -15,8 +15,8 @@ export interface ProcessedChunk {
 
 export async function processPage(data: PageData): Promise<ProcessedChunk[]> {
   const splitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 1000,
-    chunkOverlap: 200,
+    chunkSize: 500,
+    chunkOverlap: 100,
   });
 
   const docs = await splitter.createDocuments(
