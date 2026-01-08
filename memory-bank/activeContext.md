@@ -15,8 +15,10 @@ We are transitioning from the prototype phase to a more robust, production-ready
         *   **API**: Secure `/api/ingest` with `CRON_SECRET` and use `TARGET_URL` from environment variables.
         *   **Automation**: Create `vercel.json` to schedule the cron job (e.g., daily).
         *   **Frontend**: Remove the manual "Load Website" UI.
-2.  **Enhance Answer Quality:**
-    *   Implement **Context Enrichment** (prepending page titles to chunks) to improve RAG precision.
+2.  **Enhance Answer Quality (Next Task):**
+    *   **Context Enrichment**: Prepend page titles to every text chunk during ingestion.
+    *   **Reasoning**: We reduced `chunkSize` to 500 characters to avoid embedding model token limits (512 tokens). This successfully prevented crashes but caused **Context Fragmentation** (e.g., separating "Tim Berners-Lee" from "Created the WWW"), leading to retrieval failures and hallucinations. Adding the page title to every chunk restores the lost semantic context.
+
 3.  **Cleanup:**
     *   Remove the manual ingestion UI from the frontend.
 
