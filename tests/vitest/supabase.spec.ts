@@ -1,7 +1,7 @@
-import { test, expect } from "@playwright/test";
+import { describe, test, expect } from "vitest";
 import { supabase } from "@/lib/supabase";
 
-test.describe("Supabase Client Integration", () => {
+describe("Supabase Client Integration", () => {
   test("should connect to Supabase and perform a query", async () => {
     // Perform a lightweight count query on the 'documents' table
     // "head: true" means we only want the metadata (count), not the actual rows

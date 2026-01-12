@@ -66,7 +66,6 @@ We are transitioning from the prototype phase to a more robust, production-ready
 - **Enhance Answer Quality**:
     *   **Context Enrichment**: Prepend page titles to every text chunk during ingestion. This adds semantic context to isolated segments (e.g., a list of names) and significantly improves retrieval ranking.
     *   **Re-ranking**: For larger datasets, implement a re-ranking step (fetch 50, re-rank top 10) using a specialized model.
-- **Refactor Integration Tests**: Convert the remaining Playwright-based integration tests in `tests/integration` to use Vitest for consistency and better mocking capabilities.
 - **Streaming Ingestion UI**: Refactor the ingestion process to use a streaming response, providing real-time progress updates (e.g., "Crawled 5 of 50 pages") to the user.
 - **Automated Ingestion**: Set up a Vercel Cron Job to trigger the `/api/ingest` endpoint on a schedule.
 - **Crawler Robustness**:
