@@ -36,7 +36,7 @@ test.describe("RAG Chat Integration", () => {
         lastModified: new Date().toISOString(),
       },
       generateEmbedding,
-      supabase
+      supabase as any
     );
   });
 
