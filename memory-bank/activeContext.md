@@ -19,7 +19,7 @@ We are transitioning from the prototype phase to a more robust, production-ready
     *   Optimized crawler with a 10s timeout and strict origin-matching to handle obsolete/slow links.
     *   Secured the `/api/ingest` endpoint with `CRON_SECRET` and automated it via Vercel Cron Jobs.
     *   Removed manual ingestion UI from the frontend.
-    *   Documented testing and deployment procedures in `README.md`.
+    *   Standardized test scripts in `package.json` and documented everything in `README.md`.
 - **Full E2E Testing:**
     *   Verified the entire UI-driven ingestion and Q&A flow with `tests/e2e/rag-chat.spec.ts`.
 - **Integrate RAG into Chat API:**

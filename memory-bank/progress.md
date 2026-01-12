@@ -35,6 +35,7 @@
     - Requires `Authorization: Bearer <CRON_SECRET>`.
     - Configurable via `TARGET_URL` and `CRAWL_LIMIT` environment variables.
 - Scheduled daily ingestion configured via `vercel.json`.
+- Standardized test scripts in `package.json` (`test:vitest`, `test:playwright`, `test:regression`).
 - Comprehensive documentation in `README.md` for local testing and production deployment.
 
 ## What's Left to Build
