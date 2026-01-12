@@ -6,23 +6,20 @@ Our top priority is to finish building a usable, self-contained prototype of the
 ## Current Focus Chain
 We are transitioning from the prototype phase to a more robust, production-ready system.
 
-1.  **Implement Smart Ingestion & Automation (Current Focus):**
-    *   **Goal**: Optimize ingestion to skip unchanged pages and automate the process.
-    *   **Plan**:
-        *   **Database**: Create `crawled_pages` table (`url`, `last_modified`, `content_hash`) to track page state.
-        *   **Crawler**: Update `src/lib/crawler.ts` to capture the `Last-Modified` HTTP header.
-        *   **Ingestion Logic**: Update `src/lib/ingestion.ts` to implement a two-step check (Date & Checksum) before re-embedding.
-        *   **API**: Secure `/api/ingest` with `CRON_SECRET` and use `TARGET_URL` from environment variables.
-        *   **Automation**: Create `vercel.json` to schedule the cron job (e.g., daily).
-        *   **Frontend**: Remove the manual "Load Website" UI.
-2.  **Enhance Answer Quality (Next Task):**
-    *   **Context Enrichment**: Prepend page titles to every text chunk during ingestion.
-    *   **Reasoning**: We reduced `chunkSize` to 500 characters to avoid embedding model token limits (512 tokens). This successfully prevented crashes but caused **Context Fragmentation** (e.g., separating "Tim Berners-Lee" from "Created the WWW"), leading to retrieval failures and hallucinations. Adding the page title to every chunk restores the lost semantic context.
-
-3.  **Cleanup:**
-    *   Remove the manual ingestion UI from the frontend.
+1.  **Enhance Answer Quality (Next Task):**
+    *   **Context Enrichment**: Prepend page titles and descriptions to every text chunk during ingestion.
+    *   **Reasoning**: We reduced `chunkSize` to 500 characters to ensure compatibility with the embedding model's 512-token limit. This has caused **Context Fragmentation**, leading to the following regressions in regression testing:
+        *   `tests/e2e/rag-chat.spec.ts` fails because the "Unique ID" injected at the start of a document is now separated from the actual answer text in subsequent chunks. Vector search finds the ID but misses the answer.
+        *   LLM hallucinations have increased (e.g., adding Japanese brackets to citations) when context is weak.
+    *   **Fix**: Context enrichment will restore the semantic link between every chunk and its source title/ID, ensuring accurate retrieval even with small chunks.
 
 ## Recently Completed
+- **Implement Smart Ingestion & Automation:**
+    *   Implemented "Smart Updates" using `Last-Modified` headers and SHA-256 content checksums stored in a new `crawled_pages` table.
+    *   Optimized crawler with a 10s timeout and strict origin-matching to handle obsolete/slow links.
+    *   Secured the `/api/ingest` endpoint with `CRON_SECRET` and automated it via Vercel Cron Jobs.
+    *   Removed manual ingestion UI from the frontend.
+    *   Documented testing and deployment procedures in `README.md`.
 - **Full E2E Testing:**
     *   Verified the entire UI-driven ingestion and Q&A flow with `tests/e2e/rag-chat.spec.ts`.
 - **Integrate RAG into Chat API:**

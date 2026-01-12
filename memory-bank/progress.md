@@ -12,24 +12,33 @@
     - Integration with the Vercel AI SDK (`useChat`, `streamText`) for state management and streaming.
     - Connection to an open-source LLM (`gpt-oss-20b`) hosted on Together.ai.
     - Frontend components capable of rendering streamed Markdown responses, including tables, thanks to `react-markdown` and `@tailwindcss/typography`.
-    - A passing E2E test (`e2e/chat.spec.ts`) that verifies the entire flow.
 - A complete, multi-stage loading indicator (`Stop Generating` button, typing indicator, and blinking cursor) to provide user feedback during response generation.
-- An initial web crawler implementation (`src/lib/crawler.ts`) that can:
+- A robust web crawler implementation (`src/lib/crawler.ts`) that can:
     - Recursively crawl a website starting from a given URL.
     - Extract text content, prioritizing the `<main>` element.
-    - Discover and follow internal links while ignoring external ones and URL fragments.
+    - Discover and follow internal links within the same origin while ignoring URL fragments.
     - Filter out links with non-HTML extensions (PDFs, images, etc.).
-    - Extract page metadata (title, description).
-    - Correctly handle HTTP redirects to avoid duplicate processing.
-- A complete, TDD-built data ingestion pipeline (`src/lib/ingestion.ts`) that can:
-    - Split page content into chunks (`processPage`).
-    - Generate embeddings for each chunk (`generateEmbeddings`).
-    - Store the data in the database (`storeEmbeddings`).
-    - Orchestrate the full process (`ingestData`).
-- A fully integrated, end-to-end data ingestion API (`/api/ingest`) that connects the web crawler to the Supabase/AI pipeline.
+    - Extract page metadata (title, description, Last-Modified header).
+    - Handle HTTP redirects and avoid duplicate processing.
+    - Fail fast on slow pages (10s timeout reduced from 30s).
+- A smart data ingestion pipeline (`src/lib/ingestion.ts`) that:
+    - Splits page content into chunks (`processPage`).
+    - Generates embeddings for each chunk (`generateEmbeddings`).
+    - Stores the data in the database (`storeEmbeddings`).
+    - Orchestrates the full process (`ingestData`).
+    - Optimizes updates by skipping unchanged pages (Date check & SHA-256 Checksum).
+    - Safely handles small token context models (512 tokens) by using 500-character chunks.
+    - Tracks ingestion state in the `crawled_pages` database table.
+- A secured, automated ingestion API (`/api/ingest`) that:
+    - Connects the web crawler to the Supabase/AI pipeline.
+    - Supports `GET` requests for Vercel Cron Jobs.
+    - Requires `Authorization: Bearer <CRON_SECRET>`.
+    - Configurable via `TARGET_URL` and `CRAWL_LIMIT` environment variables.
+- Scheduled daily ingestion configured via `vercel.json`.
+- Comprehensive documentation in `README.md` for local testing and production deployment.
 
 ## What's Left to Build
-- **Cron Job**: Set up a Vercel cron job to trigger the `/api/ingest` endpoint regularly.
+- **Enhance Answer Quality**: Implement Context Enrichment (prepending page titles to chunks).
 
 ## Deferred Tasks
 ### Web crawler
@@ -39,5 +48,9 @@
 - **Header-based Content-Type Verification:** A safety net for non-HTML dynamic URLs.
 
 ## Known Issues
-- The E2E test for the ingestion API (`tests/e2e/ingest.spec.ts`) has flaky assertions related to database verification. The database `select` query sometimes runs before the data has propagated to read replicas. The assertions have been temporarily commented out to ensure CI stability.
-- For Safari, the UI gets frozen in the middle of streaming an answer, which causes the blinking cursor to be not blinking and the stop button to be not functioning. This is because the React Markdown occupies the main thread for up to 15 seconds. (No such problem is found for Chrome and Firefox.) The issue is postponed for now.
+- **Context Fragmentation (High Priority)**: Reducing `chunkSize` to 500 characters (for model compatibility) has caused semantic fragmentation.
+    - **Regression**: `tests/e2e/rag-chat.spec.ts` fails because unique test IDs in the first chunk are separated from the relevant answer text in later chunks.
+    - **Hallucinations**: LLM sometimes hallucinates citation details (e.g., Japanese brackets) when context retrieval is imprecise.
+    - **Fix**: Context Enrichment (next task) will address this.
+- **Safari/Firefox UI Freezing**: React Markdown rendering can occupy the main thread, causing UI lag during streaming in Safari and occasional timeouts in Firefox E2E tests (`tests/e2e/chat.spec.ts`).
+- **CI Flakiness**: E2E assertions for database state (`tests/e2e/ingest.spec.ts`) are occasionally flaky due to replication lag and have been temporarily commented out.
