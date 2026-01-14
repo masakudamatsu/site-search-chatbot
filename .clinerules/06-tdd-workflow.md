@@ -15,13 +15,14 @@ When the user asks for a new feature, a bug fix, or a logic modification, you MU
 - Write a comprehensive test suite that covers the "Happy Path" and the identified "Edge Cases".
 - **Action:** Run the test command.
 - **Verification:** Confirm the test FAILS (Red). If it passes, the test is invalid or the feature already exists.
-- **Stop:** Do not proceed to Step 3 until you have a failing test.
+- **Stop:** Always ask for user's permission before proceeding to the next step (Green phase).
 
 ### Step 3: Green Phase (Implementation)
 - Write the *minimal* amount of code required to make the test pass.
 - **Action:** Run the test command.
 - **Verification:** Confirm the test PASSES (Green).
 - If the test fails, debug the implementation and retry.
+- **Stop:** Always ask for user's permission before proceeding to the next step (Refactor phase).
 
 ### Step 4: Refactor Phase (Cleanup)
 - Review the code for readability, performance, and best practices.
