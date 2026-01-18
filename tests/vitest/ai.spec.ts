@@ -35,7 +35,7 @@ describe("AI Library", () => {
       expect(embed).toHaveBeenCalledWith(
         expect.objectContaining({
           value: "Hello, world!",
-        })
+        }),
       );
       expect(embedding).toEqual(mockEmbedding);
     });
@@ -54,12 +54,10 @@ describe("AI Library", () => {
           url: "https://example.com/page2",
         },
       ];
-      const expectedOutput = `###Source URL: https://example.com/page1
-This is the first document.
+      const expectedOutput = `This is the first document.
 
 ---
 
-###Source URL: https://example.com/page2
 This is the second document.`;
 
       // Mock embed to return a predictable embedding
@@ -80,7 +78,7 @@ This is the second document.`;
       expect(embed).toHaveBeenCalledWith(
         expect.objectContaining({
           value: "What are the documents?",
-        })
+        }),
       );
 
       // Verify Supabase RPC was called with the mocked embedding
@@ -129,9 +127,9 @@ This is the second document.`;
       });
 
       await expect(
-        aiLib.getRelevantContext("Query that will fail")
+        aiLib.getRelevantContext("Query that will fail"),
       ).rejects.toThrow(
-        "Failed to match documents: Database connection failed"
+        "Failed to match documents: Database connection failed",
       );
     });
   });

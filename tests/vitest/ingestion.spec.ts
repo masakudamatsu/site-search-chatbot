@@ -19,7 +19,7 @@ import { createHash } from "crypto";
 
 const speechFilePath = path.join(
   process.cwd(), // Use process.cwd() instead of __dirname for Vitest compatibility context
-  "tests/fixtures/steve_jobs_commencement.txt"
+  "tests/fixtures/steve_jobs_commencement.txt",
 );
 // Ensure we handle file reading correctly in the test environment
 const speechContent = fs.existsSync(speechFilePath)
@@ -101,7 +101,7 @@ describe("Ingestion Pipeline", () => {
     vi.clearAllMocks();
   });
 
-  test("Step 1: Text Splitting", async () => {
+  test("Step 1: Text Splitting (with Context Enrichment)", async () => {
     const chunks = await processPage(samplePage);
 
     expect(chunks.length).toBeGreaterThan(1);
@@ -110,6 +110,12 @@ describe("Ingestion Pipeline", () => {
       title: samplePage.title,
       description: samplePage.description,
     });
+
+    // Verify Context Enrichment: Prepended Title and URL
+    expect(chunks[0].content).toContain(`Title: ${samplePage.title}`);
+    expect(chunks[0].content).toContain(`URL: ${samplePage.url}`);
+    // Check subsequent chunk to ensure enrichment is applied to ALL chunks
+    expect(chunks[1].content).toContain(`Title: ${samplePage.title}`);
   });
 
   test("Step 2: Embedding Generation", async () => {
@@ -160,7 +166,7 @@ describe("Ingestion Pipeline", () => {
     // Verify that eq was called with the correct column and URL
     expect(eqMock).toHaveBeenCalledWith(
       "url",
-      sampleEmbeddingData[0].metadata.url
+      sampleEmbeddingData[0].metadata.url,
     );
   });
 

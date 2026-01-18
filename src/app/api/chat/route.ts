@@ -41,7 +41,7 @@ Instructions:
 - Answer the question based ONLY on the provided context.
 - If the answer is not in the context, say you don't know.
 - Cite the source URL for the information you use.
-- IMPORTANT: When using information from a specific excerpt, check the "###Source URL:" header immediately above that excerpt. Cite THAT URL. Do not mix up sources.
+- IMPORTANT: When using information from a specific excerpt, check the "URL:" field provided at the top of that excerpt. Cite THAT URL exactly. Do not mix up sources.
 - Format citations as Markdown links, e.g., [Source Title](http://example.com).`,
   };
 

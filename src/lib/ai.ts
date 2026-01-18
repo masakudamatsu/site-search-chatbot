@@ -12,7 +12,7 @@ const togetherai = createTogetherAI({
 
 // We use the specific model that matches our database schema (1024 dimensions)
 export const embeddingModel = togetherai.textEmbeddingModel(
-  "BAAI/bge-large-en-v1.5"
+  "BAAI/bge-large-en-v1.5",
 );
 
 export async function generateEmbedding(text: string): Promise<number[]> {
@@ -44,7 +44,6 @@ export async function getRelevantContext(message: string): Promise<string> {
   }
 
   // 3. Format the context into a single string to inject into the AI prompt
-  return data
-    .map((doc: any) => `###Source URL: ${doc.url}\n${doc.content}`)
-    .join("\n\n---\n\n");
+  // Note: Content already includes Title and URL from Context Enrichment in ingestion.ts
+  return data.map((doc: any) => doc.content).join("\n\n---\n\n");
 }

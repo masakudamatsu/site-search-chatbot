@@ -23,15 +23,14 @@ test.describe("RAG Chat Integration", () => {
     testUrl = `https://example.com/test-steve-jobs-${uniqueId}`; // make sure parallel test runs won't interfere with each other
 
     const text = fs.readFileSync(FIXTURE_PATH, "utf-8");
-    const uniqueText = `[Test Run: ${uniqueId}] ${text}`; // make sure parallel test runs won't interfere with each other
 
     // 2. Ingest the data into Supabase
     // We use the real ingestion pipeline to ensure the data format is correct
     await ingestData(
       {
         url: testUrl,
-        title: "Steve Jobs Commencement Speech",
-        content: uniqueText,
+        title: `Steve Jobs Commencement Speech [Test Run: ${uniqueId}]`, // We put the unique ID in the title instead of the content to verify Context Enrichment.
+        content: text,
         description: "Steve Jobs's commencement speech at Stanford University",
         lastModified: new Date().toISOString(),
       },

@@ -31,13 +31,19 @@ export async function processPage(data: PageData): Promise<ProcessedChunk[]> {
     ]
   );
 
-  return docs.map((doc, index) => ({
-    content: doc.pageContent,
-    metadata: {
-      ...doc.metadata,
-      chunkIndex: index,
-    } as ProcessedChunk["metadata"],
-  }));
+  return docs.map((doc, index) => {
+    // Context Enrichment: Prepend Title and URL to the content
+    // This helps the embedding model maintain semantic context even for small chunks.
+    const enrichedContent = `Title: ${doc.metadata.title}\nURL: ${doc.metadata.url}\n\n${doc.pageContent}`;
+
+    return {
+      content: enrichedContent,
+      metadata: {
+        ...doc.metadata,
+        chunkIndex: index,
+      } as ProcessedChunk["metadata"],
+    };
+  });
 }
 
 export interface EmbeddingData extends ProcessedChunk {
