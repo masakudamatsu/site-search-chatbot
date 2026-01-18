@@ -9,7 +9,15 @@ A Next.js chatbot application that crawls a specific website and allows users to
     ```bash
     npm install
     ```
-3.  **Configure Environment Variables**:
+3.  **Database Setup (Supabase)**:
+    -   Create a new project on [Supabase](https://supabase.com/).
+    -   Go to the **SQL Editor** in your Supabase project.
+    -   Open the files in the `supabase/` directory and copy-paste their contents into the SQL Editor in this order:
+        1.  `schema.sql`: Sets up the core `documents` table and `vector` extension.
+        2.  `match_documents.sql`: Creates the vector search function.
+        3.  `migrations/20251225_smart_ingestion.sql`: Sets up the `crawled_pages` table for smart updates.
+    -   Click the **"Run selected"** green button for each script to execute the SQL.
+4.  **Configure Environment Variables**:
     -   Copy `.env.local.example` to `.env.local`.
     -   Fill in the required values (Supabase, Together AI, Cron Secret, Target URL).
 
