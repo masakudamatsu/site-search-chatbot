@@ -49,3 +49,14 @@ When you first deploy to Vercel:
     -   Click the **"Run"** button.
 
 This manually triggers the ingestion process on the production infrastructure immediately, populating your production database without waiting for the scheduled daily run.
+
+### Forcing Re-ingestion (Clearing History)
+
+Because the system uses "Smart Ingestion," it skips pages that haven't verifiably changed. If you need to force a complete re-ingestion of the website (e.g., after changing the embedding logic or chunking strategy), you must clear the crawl history:
+
+1.  Open the **SQL Editor** in your Supabase Dashboard.
+2.  Run the following query (also saved in `supabase/clear-crawl-history.sql`):
+    ```sql
+    TRUNCATE TABLE crawled_pages;
+    ```
+3.  Trigger the ingestion process again using the `curl` command (local) or the Vercel Cron Job "Run" button (production).
