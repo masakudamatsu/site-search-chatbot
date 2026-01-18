@@ -6,14 +6,19 @@ Our top priority is to finish building a usable, self-contained prototype of the
 ## Current Focus Chain
 We are transitioning from the prototype phase to a more robust, production-ready system.
 
-1.  **Enhance Answer Quality (Next Task):**
-    *   **Context Enrichment**: Prepend page titles and descriptions to every text chunk during ingestion.
-    *   **Reasoning**: We reduced `chunkSize` to 500 characters to ensure compatibility with the embedding model's 512-token limit. This has caused **Context Fragmentation**, leading to the following regressions in regression testing:
-        *   `tests/e2e/rag-chat.spec.ts` fails because the "Unique ID" injected at the start of a document is now separated from the actual answer text in subsequent chunks. Vector search finds the ID but misses the answer.
-        *   LLM hallucinations have increased (e.g., adding Japanese brackets to citations) when context is weak.
-    *   **Fix**: Context enrichment will restore the semantic link between every chunk and its source title/ID, ensuring accurate retrieval even with small chunks.
+1.  **Prepare for Production Deployment:**
+    *   **Vercel Deployment**: Set up environment variables and trigger initial ingestion in production.
+    *   **UI Metadata Display**: Update the UI to show which website is being searched and which LLM model is powering the chatbot.
+    *   **Environment Linking**: Ensure the UI elements are dynamically linked to environment variables (e.g., `TARGET_URL`, `CHAT_MODEL`) to make the repository reusable for different websites.
 
 ## Recently Completed
+- **Enhance Answer Quality (Context Enrichment):**
+    *   Implemented **Context Enrichment** by prepending Page Title and URL to every text chunk in `src/lib/ingestion.ts`. This resolves the context fragmentation caused by small chunk sizes.
+    *   Refactored the RAG prompt in `src/app/api/chat/route.ts` and the retrieval logic in `src/lib/ai.ts` to remove redundant headers. This resolved the LLM hallucination issue where trailing `】` characters were added to URLs.
+    *   Updated E2E and unit tests to verify the enrichment logic and ensure retrieval stability.
+    *   Updated `README.md` with detailed Supabase initialization and re-ingestion instructions.
+    *   Added `supabase/clear-crawl-history.sql` helper script.
+
 - **Implement Smart Ingestion & Automation:**
     *   Implemented "Smart Updates" using `Last-Modified` headers and SHA-256 content checksums stored in a new `crawled_pages` table.
     *   Optimized crawler with a 10s timeout and strict origin-matching to handle obsolete/slow links.
@@ -63,10 +68,7 @@ We are transitioning from the prototype phase to a more robust, production-ready
     - Developed the core recursive crawling, content extraction, link discovery, and redirect handling logic.
 
 ## Post-Prototype Enhancements
-- **Enhance Answer Quality**:
-    *   **Context Enrichment**: Prepend page titles to every text chunk during ingestion. This adds semantic context to isolated segments (e.g., a list of names) and significantly improves retrieval ranking.
-    *   **Re-ranking**: For larger datasets, implement a re-ranking step (fetch 50, re-rank top 10) using a specialized model.
-- **Streaming Ingestion UI**: Refactor the ingestion process to use a streaming response, providing real-time progress updates (e.g., "Crawled 5 of 50 pages") to the user.
+- **Re-ranking**: For larger datasets, implement a re-ranking step (fetch 50, re-rank top 10) using a specialized model.
 - **Automated Ingestion**: Set up a Vercel Cron Job to trigger the `/api/ingest` endpoint on a schedule.
 - **Crawler Robustness**:
     - **`robots.txt` Compliance**: Add support for parsing and respecting `robots.txt` rules.

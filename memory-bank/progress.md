@@ -36,10 +36,12 @@
     - Configurable via `TARGET_URL` and `CRAWL_LIMIT` environment variables.
 - Scheduled daily ingestion configured via `vercel.json`.
 - Standardized test scripts in `package.json` (`test:vitest`, `test:playwright`, `test:regression`).
-- Comprehensive documentation in `README.md` for local testing and production deployment.
+- Comprehensive documentation in `README.md` for local testing, Supabase initialization, and production deployment.
+- **Answer Quality Enhancement (Context Enrichment)**: Every text chunk now contains its source Page Title and URL, resolving context fragmentation and improving retrieval accuracy.
+- **RAG Prompt Optimization**: Streamlined the context format by removing redundant headers and instructing the LLM to use internal metadata for accurate citations.
 
 ## What's Left to Build
-- **Enhance Answer Quality**: Implement Context Enrichment (prepending page titles to chunks).
+- **Prepare for Production Deployment**: UI enhancements and Vercel configuration.
 
 ## Deferred Tasks
 ### Web crawler
@@ -49,9 +51,5 @@
 - **Header-based Content-Type Verification:** A safety net for non-HTML dynamic URLs.
 
 ## Known Issues
-- **Context Fragmentation (High Priority)**: Reducing `chunkSize` to 500 characters (for model compatibility) has caused semantic fragmentation.
-    - **Regression**: `tests/e2e/rag-chat.spec.ts` fails because unique test IDs in the first chunk are separated from the relevant answer text in later chunks.
-    - **Hallucinations**: LLM sometimes hallucinates citation details (e.g., Japanese brackets) when context retrieval is imprecise.
-    - **Fix**: Context Enrichment (next task) will address this.
 - **Safari/Firefox UI Freezing**: React Markdown rendering can occupy the main thread, causing UI lag during streaming in Safari and occasional timeouts in Firefox E2E tests (`tests/e2e/chat.spec.ts`).
 - **CI Flakiness**: E2E assertions for database state (`tests/e2e/ingest.spec.ts`) are occasionally flaky due to replication lag and have been temporarily commented out.
