@@ -18,7 +18,7 @@ test.describe("RAG Chat Integration", () => {
     const projectName = test.info().project.name;
     // 1. Set the test URL and read the fixture file
     uniqueId = `${projectName}-${Date.now()}-${Math.floor(
-      Math.random() * 1000
+      Math.random() * 1000,
     )}`;
     testUrl = `https://example.com/test-steve-jobs-${uniqueId}`; // make sure parallel test runs won't interfere with each other
 
@@ -73,10 +73,9 @@ test.describe("RAG Chat Integration", () => {
 
     // Wait for streaming to finish (or at least for text to appear)
     // We expect the answer to mention "connecting the dots"
-    // Increased timeout for LLM generation
-    await expect(aiMessage).toContainText("connecting the dots", {
+    // We use a robust assertion because phrasing can vary (e.g. "connected the dots")
+    await expect(aiMessage).toContainText(/connect.*dots/i, {
       timeout: 30000,
-      ignoreCase: true,
     });
 
     // 3. Verify the citation

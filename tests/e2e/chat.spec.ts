@@ -22,8 +22,9 @@ test("should allow a user to send a message and receive a response from the AI",
 
   // 4. Assert that a second message from the AI appears.
   // We will check that the number of list items becomes 2.
+  // We use an increased timeout because LLM generation can take several seconds.
   const allMessages = messageList.getByRole("listitem");
-  await expect(allMessages).toHaveCount(2);
+  await expect(allMessages).toHaveCount(2, { timeout: 30000 });
 
   // 5. Optional: We can also assert that the AI's message is not empty.
   const aiMessage = allMessages.nth(1); // The second message
