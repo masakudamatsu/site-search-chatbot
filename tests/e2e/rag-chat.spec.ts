@@ -83,5 +83,9 @@ test.describe("RAG Chat Integration", () => {
     const citationLink = aiMessage.getByRole("link");
     await expect(citationLink).toBeVisible();
     await expect(citationLink).toHaveAttribute("href", testUrl);
+
+    // 4. Verify that the link opens in a new tab
+    await expect(citationLink).toHaveAttribute("target", "_blank");
+    await expect(citationLink).toHaveAttribute("rel", "noopener noreferrer");
   });
 });

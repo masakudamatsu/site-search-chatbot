@@ -33,7 +33,15 @@ export default function ChatMessage({
           if (part.type === "text") {
             // Try accessing 'part.text' instead of 'part.value'
             return (
-              <ReactMarkdown key={index} remarkPlugins={[remarkGfm]}>
+              <ReactMarkdown
+                key={index}
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  a: ({ node, ...props }) => (
+                    <a {...props} target="_blank" rel="noopener noreferrer" />
+                  ),
+                }}
+              >
                 {part.text}
               </ReactMarkdown>
             );
