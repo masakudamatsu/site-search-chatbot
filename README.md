@@ -68,8 +68,9 @@ You can manually trigger the ingestion process to verify your setup:
 2. In a separate terminal, run:
 ```bash
 curl -X GET http://localhost:3000/api/ingest \
-     -H "Authorization: Bearer YOUR_SECRET"
+     -H "Authorization: Bearer CRON_SECRET"
 ```
+where `CRON_SECRET` is replaced with the value specified in `.env.local`.
 
 ## 🏗️ Development Workflow
 
