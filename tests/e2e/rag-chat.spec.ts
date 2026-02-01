@@ -7,7 +7,7 @@ import { supabase } from "@/lib/supabase";
 
 const FIXTURE_PATH = path.join(
   process.cwd(),
-  "tests/fixtures/steve_jobs_commencement.txt"
+  "tests/fixtures/steve_jobs_commencement.txt",
 );
 
 test.describe("RAG Chat Integration", () => {
@@ -35,7 +35,7 @@ test.describe("RAG Chat Integration", () => {
         lastModified: new Date().toISOString(),
       },
       generateEmbedding,
-      supabase as any
+      supabase as any,
     );
   });
 

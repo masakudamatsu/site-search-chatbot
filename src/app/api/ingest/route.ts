@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   if (!targetUrl) {
     return NextResponse.json(
       { error: "Missing NEXT_PUBLIC_TARGET_URL environment variable" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     console.error("Ingestion failed:", error);
     return NextResponse.json(
       { error: "Failed to process ingestion request" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
     if (!baseUrl) {
       return NextResponse.json(
         { error: "baseUrl is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
     console.error("Ingestion failed:", error);
     return NextResponse.json(
       { error: "Failed to process ingestion request" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

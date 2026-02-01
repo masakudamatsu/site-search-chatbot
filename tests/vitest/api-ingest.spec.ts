@@ -86,7 +86,7 @@ describe("Ingest API (GET)", () => {
     expect(crawlWebsite).toHaveBeenCalledWith(
       "http://example.com",
       1000,
-      expect.any(Function)
+      expect.any(Function),
     );
   });
 });
