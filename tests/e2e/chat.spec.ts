@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 
+// TODO: resolve the flakiness of this test
 test("should allow a user to send a message and receive a response from the AI", async ({
   page,
 }) => {
@@ -24,7 +25,7 @@ test("should allow a user to send a message and receive a response from the AI",
   // We will check that the number of list items becomes 2.
   // We use an increased timeout because LLM generation can take several seconds.
   const allMessages = messageList.getByRole("listitem");
-  await expect(allMessages).toHaveCount(2, { timeout: 30000 });
+  await expect(allMessages).toHaveCount(2, { timeout: 30000 }); // TODO: flaky test might need more time
 
   // 5. Optional: We can also assert that the AI's message is not empty.
   const aiMessage = allMessages.nth(1); // The second message

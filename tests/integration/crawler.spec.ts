@@ -20,7 +20,7 @@ test.describe("crawlPage()", () => {
   test.afterAll(async () => {
     await browser.close();
   });
-
+  // TODO: flaky, but works most of the time
   test("should extract content from the <main> tag", async () => {
     const result = await crawlPage(browser, pageWithMain);
 
@@ -35,7 +35,7 @@ test.describe("crawlPage()", () => {
   test("should fall back to the <body> tag if <main> does not exist", async () => {
     const result = await crawlPage(browser, pageWithoutMain);
 
-    expect(result).not.toBeNull();
+    expect(result).not.toBeNull(); // TODO: flaky, but works most of the time
     // Check for content that is definitely in <body>
     expect(result?.content).toContain("Google");
     // Check that we get something.
@@ -165,6 +165,7 @@ test.describe("crawlWebsite()", () => {
     expect(crawledPages).toContain(startUrl);
   });
 
+  // TODO: flaky, but works most of the time
   test("should handle redirects correctly with callbacks", async () => {
     // Crawl just the one page (limit 1)
     const pages = new Map<string, any>();
@@ -174,7 +175,7 @@ test.describe("crawlWebsite()", () => {
     // The processed PAGE content should only be associated with the final destination
     // because crawlPage returns the final URL
     expect(pages.has(redirectUrl.origin)).toBe(false);
-    expect(pages.has(redirectUrl.destination)).toBe(true);
+    expect(pages.has(redirectUrl.destination)).toBe(true); // TODO: flaky, but works most of the time
     // The visited Set tracks all URLs encountered, including redirects
     expect(visited.has(redirectUrl.origin)).toBe(true);
     expect(visited.has(redirectUrl.destination)).toBe(true);

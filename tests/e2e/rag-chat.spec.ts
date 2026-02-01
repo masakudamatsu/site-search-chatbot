@@ -50,7 +50,7 @@ test.describe("RAG Chat Integration", () => {
       console.error("Failed to clean up test data:", error);
     }
   });
-
+  // TODO: resolve the flakiness of this test
   test("should provide an answer based on the ingested content and cite the source", async ({
     page,
   }) => {
@@ -76,7 +76,7 @@ test.describe("RAG Chat Integration", () => {
     // We use a robust assertion because phrasing can vary (e.g. "connected the dots")
     await expect(aiMessage).toContainText(/connect.*dots/i, {
       timeout: 30000,
-    });
+    }); // TODO: flaky test might need more time
 
     // 3. Verify the citation
     // We check for a link element with the correct href, as citations are now Markdown links
