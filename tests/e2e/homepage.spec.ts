@@ -20,3 +20,9 @@ test("homepage displays site URL and LLM model", async ({ page }) => {
   await expect(page.getByText(targetUrl)).toBeVisible();
   await expect(page.getByText(chatModel)).toBeVisible();
 });
+
+test("homepage has noindex meta tag", async ({ page }) => {
+  await page.goto("/");
+  const metaRobots = page.locator('meta[name="robots"]');
+  await expect(metaRobots).toHaveAttribute("content", "noindex, nofollow");
+});

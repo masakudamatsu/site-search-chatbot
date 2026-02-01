@@ -10,7 +10,8 @@ We are transitioning from the prototype phase to a more robust, production-ready
 - **Prepare for Production Deployment:**
     *   **Environment Refactor**: Renamed `TARGET_URL` to `NEXT_PUBLIC_TARGET_URL` and introduced `NEXT_PUBLIC_CHAT_MODEL` to make configuration accessible to both frontend and backend.
     *   **Metadata Display**: Created a reusable `MetadataDisplay` component to show the active website and LLM model on the UI, improving transparency and reusability.
-    *   **TDD Verification**: Updated backend tests and added new E2E tests to verify that metadata is correctly displayed and that environment variables are properly utilized.
+    *   **Search Engine Privacy**: Added `noindex, nofollow` metadata to the root layout to prevent search engines from indexing the test site.
+    *   **TDD Verification**: Updated backend tests and added new E2E tests to verify that metadata is correctly displayed, that privacy settings are in place, and that environment variables are properly utilized.
     *   **Documentation**: Updated `README.md` with production setup instructions and new environment variable requirements.
 
 - **Enhance Answer Quality (Context Enrichment):**
