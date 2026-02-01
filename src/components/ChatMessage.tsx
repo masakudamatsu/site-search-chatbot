@@ -38,7 +38,12 @@ export default function ChatMessage({
                 remarkPlugins={[remarkGfm]}
                 components={{
                   a: ({ node, ...props }) => (
-                    <a {...props} target="_blank" rel="noopener noreferrer" />
+                    <a
+                      {...props}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline text-[11px] text-blue-400 underline decoration-blue-400/30 underline-offset-2 hover:text-blue-300 hover:decoration-blue-300 before:content-['('] after:content-[')']"
+                    />
                   ),
                 }}
               >

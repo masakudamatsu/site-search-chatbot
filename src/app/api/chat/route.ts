@@ -39,10 +39,20 @@ ${context}
 
 Instructions:
 - Answer the question based ONLY on the provided context.
+- Provide a comprehensive and detailed answer, including as much relevant information from the context as possible.
 - If the answer is not in the context, say you don't know.
-- Cite the source URL for the information you use.
-- IMPORTANT: When using information from a specific excerpt, check the "URL:" field provided at the top of that excerpt. Cite THAT URL exactly. Do not mix up sources.
-- Format citations as Markdown links, e.g., [Source Title](http://example.com).`,
+- Cite the source page title and URL for the information you use.
+    - IMPORTANT: When using information from a specific excerpt, check the "URL:" field provided at the top of that excerpt. Cite THAT URL exactly. Do not mix up sources.
+    - IMPORTANT: Format the source page title and URL strictly as Markdown links using standard square brackets [] and parentheses ().
+- Cite multiple source pages if the information comes from different sources.
+- IMPORTANT: Place the source page title as a link *immediately* before the period of the sentence where the information is used. Do not wait until the end of the paragraph.
+    - CORRECT: The first website was created at CERN in November 1990 [WWW Project History](http://info.cern.ch/hypertext/WWW/History.html). Tim Berners-Lee created it on a NeXT workstation [People involved in the WorldWideWeb project](http://info.cern.ch/hypertext/WWW/People.html).
+    - INCORRECT: The first website was created at CERN in November 1990. [WWW Project History](http://info.cern.ch/hypertext/WWW/History.html) Tim Berners-Lee created it on a NeXT workstation. [People involved in the WorldWideWeb project](http://info.cern.ch/hypertext/WWW/People.html)
+    - INCORRECT: The first website was created at CERN in November 1990. Tim Berners-Lee created it on a NeXT workstation [WWW Project History](http://info.cern.ch/hypertext/WWW/History.html), [People involved in the WorldWideWeb project](http://info.cern.ch/hypertext/WWW/People.html).
+- STRICTLY FORBIDDEN: Do not wrap the source page title as a link in extra brackets like 【】.
+    - CORRECT: The first website was created at CERN in November 1990 [WWW Project History](http://info.cern.ch/hypertext/WWW/History.html).
+    - INCORRECT: The first website was created at CERN in November 1990 【WWW Project History】(http://info.cern.ch/hypertext/WWW/History.html).
+    - INCORRECT: The first website was created at CERN in November 1990 【WWW Project History](http://info.cern.ch/hypertext/WWW/History.html).`,
   };
 
   // Convert the UIMessage[] to ModelMessage[]
