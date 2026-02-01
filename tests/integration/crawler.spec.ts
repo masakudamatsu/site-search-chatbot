@@ -26,7 +26,7 @@ test.describe("crawlPage()", () => {
 
     expect(result).not.toBeNull();
     // Check for content that is definitely in <main>
-    expect(result?.content).toContain("The Free Encyclopedia");
+    expect(result?.content).toContain("Read Wikipedia in your language");
 
     // Check for content that is definitely NOT in <main> (e.g., in the footer)
     expect(result?.content).not.toContain("Terms of Use");
@@ -85,7 +85,7 @@ test.describe("extractLinks()", () => {
 
     // Check that an internal link is included
     expect(links).toContain(
-      "http://info.cern.ch/hypertext/WWW/TheProject.html"
+      "http://info.cern.ch/hypertext/WWW/TheProject.html",
     );
 
     // Check that an external link is NOT included
@@ -112,7 +112,7 @@ test.describe("extractLinks()", () => {
     const links = await extractLinks(browser, url);
     // Should NOT find the link with port 8001 even though it starts with the same hostname
     expect(links).not.toContain(
-      "http://info.cern.ch:8001/nnsc.nsf.net:210/internet-resource-guide?library"
+      "http://info.cern.ch:8001/nnsc.nsf.net:210/internet-resource-guide?library",
     );
   });
 });
@@ -129,7 +129,7 @@ test.describe("crawlWebsite()", () => {
       numberOfPages,
       async (page) => {
         pages.set(page.url, page);
-      }
+      },
     );
 
     // Check that we crawled the correct number of pages
@@ -146,7 +146,7 @@ test.describe("crawlWebsite()", () => {
     const linkedPageUrl = "http://info.cern.ch/hypertext/WWW/TheProject.html";
     expect(visited.has(linkedPageUrl)).toBe(true);
     expect(pages.get(linkedPageUrl)?.content).toContain(
-      "The WorldWideWeb (W3)"
+      "The WorldWideWeb (W3)",
     );
   });
 
