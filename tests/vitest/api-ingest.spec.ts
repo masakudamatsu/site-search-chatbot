@@ -53,9 +53,9 @@ describe("Ingest API (GET)", () => {
     expect(res.status).toBe(401);
   });
 
-  test("should return 500 if TARGET_URL is missing", async () => {
+  test("should return 500 if NEXT_PUBLIC_TARGET_URL is missing", async () => {
     process.env.CRON_SECRET = "secret123";
-    delete process.env.TARGET_URL;
+    delete process.env.NEXT_PUBLIC_TARGET_URL;
 
     const req = new NextRequest("http://localhost/api/ingest", {
       headers: { Authorization: "Bearer secret123" },
@@ -65,12 +65,12 @@ describe("Ingest API (GET)", () => {
     const res = await GET(req);
     expect(res.status).toBe(500);
     const body = await res.json();
-    expect(body.error).toContain("Missing TARGET_URL");
+    expect(body.error).toContain("Missing NEXT_PUBLIC_TARGET_URL");
   });
 
   test("should trigger crawling if authorized and configured", async () => {
     process.env.CRON_SECRET = "secret123";
-    process.env.TARGET_URL = "http://example.com";
+    process.env.NEXT_PUBLIC_TARGET_URL = "http://example.com";
 
     // Mock crawlWebsite to return a Set
     (crawlWebsite as any).mockResolvedValue(new Set(["http://example.com"]));

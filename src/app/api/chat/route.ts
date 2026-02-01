@@ -49,8 +49,10 @@ Instructions:
   // The messages that are sent from the frontend by the useChat hook are in the UIMessage format, which is designed for rendering in the UI. The backend streamText function, however, needs the messages in a different format, ModelMessage, which is designed to be sent to the LLM API.
   const modelMessages = convertToModelMessages(messages);
 
+  const modelName = process.env.NEXT_PUBLIC_CHAT_MODEL || "openai/gpt-oss-20b";
+
   const result = await streamText({
-    model: togetherai("openai/gpt-oss-20b"), // see https://docs.together.ai/docs/serverless-models#chat-models for the list of chat model names used by Togther AI
+    model: togetherai(modelName), // see https://docs.together.ai/docs/serverless-models#chat-models for the list of chat model names used by Togther AI
     messages: [systemMessage, ...modelMessages],
 
     // // debugging callbacks

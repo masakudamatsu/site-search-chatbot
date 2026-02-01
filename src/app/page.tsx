@@ -5,6 +5,7 @@ import { DefaultChatTransport } from "ai";
 import ChatInput from "@/components/ChatInput";
 import MessageList from "@/components/MessageList";
 import TypingIndicator from "@/components/TypingIndicator";
+import MetadataDisplay from "@/components/MetadataDisplay";
 
 export default function Home() {
   const { messages, sendMessage, status, stop } = useChat({
@@ -31,6 +32,7 @@ export default function Home() {
             <p className="text-gray-500">
               Ask questions about the site content.
             </p>
+            <MetadataDisplay variant="welcome" />
           </div>
 
           <div className="w-full max-w-2xl p-4">
@@ -53,6 +55,7 @@ export default function Home() {
             </div>
           </div>
           <div className="w-full max-w-2xl self-center p-4">
+            <MetadataDisplay variant="chat" />
             <ChatInput
               onSendMessage={handleSendMessage}
               isLoading={isLoading}

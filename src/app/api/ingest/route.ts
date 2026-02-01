@@ -10,10 +10,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const targetUrl = process.env.TARGET_URL;
+  const targetUrl = process.env.NEXT_PUBLIC_TARGET_URL;
   if (!targetUrl) {
     return NextResponse.json(
-      { error: "Missing TARGET_URL environment variable" },
+      { error: "Missing NEXT_PUBLIC_TARGET_URL environment variable" },
       { status: 500 }
     );
   }

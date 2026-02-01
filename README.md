@@ -19,7 +19,12 @@ A Next.js chatbot application that crawls a specific website and allows users to
     -   Click the **"Run selected"** green button for each script to execute the SQL.
 4.  **Configure Environment Variables**:
     -   Copy `.env.local.example` to `.env.local`.
-    -   Fill in the required values (Supabase, Together AI, Cron Secret, Target URL).
+    -   Fill in the required values:
+        -   `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` (Supabase)
+        -   `TOGETHER_AI_API_KEY` (Together AI)
+        -   `CRON_SECRET` (For securing the ingest API)
+        -   `NEXT_PUBLIC_TARGET_URL` (The website URL to search)
+        -   `NEXT_PUBLIC_CHAT_MODEL` (The LLM model to use; see [Together AI documentation](https://docs.together.ai/docs/serverless-models#chat-models) for model names such as `openai/gpt-oss-20b`)
 
 ## Automated Ingestion (Cron Job)
 
@@ -40,7 +45,7 @@ You can test the ingestion process locally by simulating the Cron Job request:
     ```
 
 This will trigger the crawler, which will:
--   Visit the `TARGET_URL`.
+-   Visit the `NEXT_PUBLIC_TARGET_URL`.
 -   Check for updates.
 -   Populate/Update the database with new content.
 
@@ -49,7 +54,7 @@ This will trigger the crawler, which will:
 When you first deploy to Vercel:
 
 1.  **Deploy** the project.
-2.  **Configure Environment Variables** in the Vercel Dashboard (match your `.env.local` settings, ensuring `CRON_SECRET` and `TARGET_URL` are set).
+2.  **Configure Environment Variables** in the Vercel Dashboard (match your `.env.local` settings, ensuring `CRON_SECRET`, `NEXT_PUBLIC_TARGET_URL`, and `NEXT_PUBLIC_CHAT_MODEL` are set).
 3.  **Trigger Initial Ingestion**:
     -   Go to your project in Vercel.
     -   Navigate to the **Cron Jobs** tab.

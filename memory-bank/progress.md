@@ -39,9 +39,13 @@
 - Comprehensive documentation in `README.md` for local testing, Supabase initialization, and production deployment.
 - **Answer Quality Enhancement (Context Enrichment)**: Every text chunk now contains its source Page Title and URL, resolving context fragmentation and improving retrieval accuracy.
 - **RAG Prompt Optimization**: Streamlined the context format by removing redundant headers and instructing the LLM to use internal metadata for accurate citations.
+- **Production Deployment Readiness**: 
+    - Exposed critical configurations (Target URL, Chat Model) via `NEXT_PUBLIC_` environment variables for visibility and reusability.
+    - Implemented a reusable `MetadataDisplay` component to show the active search source and model in the UI.
+    - Updated documentation and tests to support dynamic production environments.
 
 ## What's Left to Build
-- **Prepare for Production Deployment**: UI enhancements and Vercel configuration.
+- **Vercel Deployment**: Final deployment to Vercel and initial ingestion trigger.
 
 ## Deferred Tasks
 ### Web crawler

@@ -6,12 +6,13 @@ Our top priority is to finish building a usable, self-contained prototype of the
 ## Current Focus Chain
 We are transitioning from the prototype phase to a more robust, production-ready system.
 
-1.  **Prepare for Production Deployment:**
-    *   **Vercel Deployment**: Set up environment variables and trigger initial ingestion in production.
-    *   **UI Metadata Display**: Update the UI to show which website is being searched and which LLM model is powering the chatbot.
-    *   **Environment Linking**: Ensure the UI elements are dynamically linked to environment variables (e.g., `TARGET_URL`, `CHAT_MODEL`) to make the repository reusable for different websites.
-
 ## Recently Completed
+- **Prepare for Production Deployment:**
+    *   **Environment Refactor**: Renamed `TARGET_URL` to `NEXT_PUBLIC_TARGET_URL` and introduced `NEXT_PUBLIC_CHAT_MODEL` to make configuration accessible to both frontend and backend.
+    *   **Metadata Display**: Created a reusable `MetadataDisplay` component to show the active website and LLM model on the UI, improving transparency and reusability.
+    *   **TDD Verification**: Updated backend tests and added new E2E tests to verify that metadata is correctly displayed and that environment variables are properly utilized.
+    *   **Documentation**: Updated `README.md` with production setup instructions and new environment variable requirements.
+
 - **Enhance Answer Quality (Context Enrichment):**
     *   Implemented **Context Enrichment** by prepending Page Title and URL to every text chunk in `src/lib/ingestion.ts`. This resolves the context fragmentation caused by small chunk sizes.
     *   Refactored the RAG prompt in `src/app/api/chat/route.ts` and the retrieval logic in `src/lib/ai.ts` to remove redundant headers. This resolved the LLM hallucination issue where trailing `】` characters were added to URLs.
