@@ -11,7 +11,7 @@ export interface PageData {
 // crawlPage now accepts an existing browser instance
 export async function crawlPage(
   browser: Browser,
-  url: string
+  url: string,
 ): Promise<PageData | null> {
   if (!url) {
     return null;
@@ -40,7 +40,7 @@ export async function crawlPage(
         const content = main ? main.innerText : document.body.innerText;
         const title = document.title;
         const metaDescription = document.querySelector(
-          'meta[name="description"]'
+          'meta[name="description"]',
         );
         const description = metaDescription
           ? (metaDescription as HTMLMetaElement).content
@@ -54,7 +54,7 @@ export async function crawlPage(
           lastModified,
         };
       },
-      { finalUrl, lastModified }
+      { finalUrl, lastModified },
     );
 
     return data;
@@ -69,7 +69,7 @@ export async function crawlPage(
 // extractLinks now accepts an existing browser instance
 export async function extractLinks(
   browser: Browser,
-  url: string
+  url: string,
 ): Promise<string[]> {
   if (!url) {
     return [];
@@ -152,7 +152,7 @@ async function getBrowser(): Promise<Browser> {
 export async function crawlWebsite(
   startUrl: string,
   limit: number = 1000,
-  onPageCrawled?: (page: PageData) => Promise<void>
+  onPageCrawled?: (page: PageData) => Promise<void>,
 ): Promise<Set<string>> {
   const browser = await getBrowser();
   // URLs to visit
