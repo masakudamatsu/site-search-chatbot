@@ -14,6 +14,8 @@ We are transitioning from the prototype phase to a more robust, production-ready
     *   **TDD Verification**: Updated backend tests and added new E2E tests to verify that metadata is correctly displayed, that privacy settings are in place, and that environment variables are properly utilized.
     *   **Documentation**: Updated `README.md` with production setup instructions and new environment variable requirements.
     *   **Chromium Fix for Vercel**: Refactored the crawler to use `@sparticuz/chromium` and `playwright-core` in production, enabling the crawler to run within Vercel's Serverless Function limits while maintaining local development compatibility.
+    *   **Embedding Model Migration**: Switched to `BAAI/bge-base-en-v1.5` (768 dimensions) after the previous model was deprecated by Together AI. Refactored the code to use the `EMBEDDING_MODEL` environment variable for better resilience.
+    *   **SQL Refactor**: Restructured the `supabase/` folder into task-oriented scripts (`documents.sql`, `crawled_pages.sql`, `match_documents.sql`) and updated all schema definitions to the new 768-dimension requirement.
     *   **Crawler Improvements**: Added real-time progress logging to the crawler, displaying the count of processed pages against total discovered URLs.
 
 - **Enhance Answer Quality (Context Enrichment):**

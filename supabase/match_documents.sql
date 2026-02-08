@@ -1,7 +1,7 @@
 -- Create a function to search for documents
--- (configured for `baai/bge-large-en-v1.5` embeddings with 1024 dimensions)
+-- NOTE: Embedding dimension is set to 768 to match BAAI/bge-base-en-v1.5.
 create or replace function match_documents (
-  query_embedding vector(1024),
+  query_embedding vector(768),
   match_threshold float,
   match_count int
 )

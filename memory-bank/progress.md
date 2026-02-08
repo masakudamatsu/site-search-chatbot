@@ -45,10 +45,12 @@
     - Added `noindex, nofollow` metadata to prevent search engine indexing of the test site.
     - Updated documentation and tests to support dynamic production environments and privacy settings.
     - Fixed Chromium browser execution for Vercel by implementing a conditional loader using `@sparticuz/chromium`.
+    - Migrated to `BAAI/bge-base-en-v1.5` (768 dims) and implemented dynamic model configuration via environment variables.
+    - Restructured database setup into organized SQL scripts (`supabase/documents.sql`, etc.) and updated them for the new model.
     - Improved crawler logging with real-time progress indicators.
 
 ## What's Left to Build
-- **Vercel Deployment**: Verification of the Cron Job after the Chromium fix.
+- **Vercel Deployment**: Final verification of the end-to-end ingestion flow in production.
 
 ## Deferred Tasks
 ### Web crawler

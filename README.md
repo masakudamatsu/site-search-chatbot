@@ -45,9 +45,9 @@ npm install
 - **Initialize Database**:
     - Go to the **SQL Editor** in your Supabase project.
     - Open the files in the `supabase/` directory and execute them in this order:
-        1.  `schema.sql`: Sets up the core `documents` table and `vector` extension.
-        2.  `match_documents.sql`: Creates the vector search function.
-        3.  `migrations/20251225_smart_ingestion.sql`: Sets up the `crawled_pages` table for smart updates.
+        1.  `documents.sql`: Sets up the core `documents` table and `vector` extension.
+        2.  `crawled_pages.sql`: Sets up the tracking table for smart updates.
+        3.  `match_documents.sql`: Creates the vector search function.
 
 ### 4. AI & Embeddings Setup (Together AI)
 - Sign up for an account at [Together AI](https://www.together.ai/).
@@ -87,10 +87,24 @@ The project follows a strict Test-Driven Development (TDD) approach.
 - **Full Regression**: `npm run test:regression`
 
 ### Forcing Re-ingestion
-To force a complete re-ingestion (clearing the "Smart Ingestion" history), run this SQL in your Supabase dashboard:
+To force a complete re-ingestion (clearing the "Smart Ingestion" history), run the script in `supabase/clear_history.sql` in your Supabase dashboard:
 ```sql
 TRUNCATE TABLE crawled_pages;
 ```
+
+### Changing Embedding Models
+If you need to switch to a different embedding model (e.g., if a model is deprecated):
+
+1. **Update Environment Variables**:
+   - Change `EMBEDDING_MODEL` in `.env.local` (and in your Vercel project settings).
+2. **Update SQL Scripts** (if the dimension size changes, e.g., 768 to 1024):
+   - **`supabase/documents.sql`**: Update the `vector(N)` dimension in the `CREATE TABLE` statement.
+   - **`supabase/match_documents.sql`**: Update the `vector(N)` dimension in the function signature.
+3. **Reset Database**:
+   Execute the following scripts in your Supabase SQL Editor in this order:
+   1. `supabase/documents.sql` (Drops and recreates the table).
+   2. `supabase/match_documents.sql` (Updates the search function).
+   3. `supabase/clear_history.sql` (Wipes crawl history to force re-ingestion).
 
 ## 🌐 Production Deployment with Vercel
 
@@ -98,7 +112,7 @@ TRUNCATE TABLE crawled_pages;
 2. **Configure Environment Variables**: Add all variables from your `.env.local` to the Vercel project settings.
 3. **First Deployment & Initial Ingestion**: 
    Since the production database starts empty, you must trigger the first crawl manually:
-   - Go to the **Cron Jobs** tab in your Vercel project dashboard.
+   - Go to the **Settings > Cron Jobs** tab in your Vercel project dashboard.
    - Locate the `/api/ingest` job and click the **"Run"** button.
 
 ## 🤝 Contributing
