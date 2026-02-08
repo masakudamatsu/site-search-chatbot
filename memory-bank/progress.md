@@ -59,6 +59,7 @@
 - **Polite Rate-Limiting:** Adding delays between requests.
 - **Header-based Content-Type Verification:** A safety net for non-HTML dynamic URLs.
 
-## Known Issues
+## Known Issues (in the order of importance)
+- **Vercel Crawler Stability**: The browser-based crawler crashes on Vercel after processing the first page ("Target page, context or browser has been closed"). This likely stems from serverless resource limits (memory) or environment-specific Chromium instability during multi-page navigations.
 - **Safari/Firefox UI Freezing**: React Markdown rendering can occupy the main thread, causing UI lag during streaming in Safari and occasional timeouts in Firefox E2E tests (`tests/e2e/chat.spec.ts`).
 - **CI Flakiness**: E2E assertions for database state (`tests/e2e/ingest.spec.ts`) are occasionally flaky due to replication lag and have been temporarily commented out.
