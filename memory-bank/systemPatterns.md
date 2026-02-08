@@ -7,6 +7,7 @@ The application will be a monolithic Next.js application, containing both the fr
 1.  **Initiation:** A Vercel Cron Job (configured via `vercel.json` and secured with `CRON_SECRET`) triggers the crawling process periodically.
 2.  **Crawling:** A Playwright-based crawler starts at the `TARGET_URL`. It navigates through the website, respecting `robots.txt` and staying within the same domain. It extracts the textual content and `Last-Modified` headers from each page.
     *   **Browser Management**: The system uses a conditional loader to handle environment differences. Locally, it uses standard Playwright for debugging and speed. In production (Vercel), it uses `@sparticuz/chromium` and `playwright-core` to stay within serverless size and binary constraints.
+    *   **Progress Tracking**: The crawler provides real-time logging of ingestion progress (processed vs. total discovered URLs) to provide visibility during long-running tasks.
 3.  **Smart Ingestion Strategy:**
     - **Tracking:** A `crawled_pages` table stores the `url`, `last_modified` header, and `content_hash` for every processed page.
     - **Date Check:** Before processing, the system checks if the `Last-Modified` header matches the stored value. If it matches, the page is skipped.
