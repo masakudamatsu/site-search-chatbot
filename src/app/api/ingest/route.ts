@@ -4,6 +4,9 @@ import { ingestData } from "@/lib/ingestion";
 import { generateEmbedding } from "@/lib/ai";
 import { supabase } from "@/lib/supabase";
 
+// Allow the crawler to run for up to 60 seconds (max for Vercel Hobby)
+export const maxDuration = 60;
+
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
