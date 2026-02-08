@@ -135,12 +135,17 @@ async function getBrowser(): Promise<Browser> {
     // Production (Vercel)
     const chromium = require("@sparticuz/chromium-min");
     const { chromium: playwright } = require("playwright-core");
+
+    // Dynamically detect architecture to select the correct binary pack
+    const arch = process.arch === "arm64" ? "arm64" : "x64";
+    console.log(`Detected architecture: ${process.arch}, using ${arch} pack.`);
+
+    const packUrl = `https://github.com/Sparticuz/chromium/releases/download/v143.0.4/chromium-v143.0.4-pack.${arch}.tar`;
+
     return await playwright.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(
-        "https://github.com/Sparticuz/chromium/releases/download/v143.0.4/chromium-v143.0.4-pack.tar",
-      ),
+      executablePath: await chromium.executablePath(packUrl),
       headless: chromium.headless,
     });
   } else {
