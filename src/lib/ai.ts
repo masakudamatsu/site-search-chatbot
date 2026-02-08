@@ -10,9 +10,9 @@ const togetherai = createTogetherAI({
   apiKey: process.env.TOGETHER_AI_API_KEY,
 });
 
-// We use the specific model that matches our database schema (1024 dimensions)
+// We use the model specified in the environment variables (defaulting to BGE Base if not set)
 export const embeddingModel = togetherai.textEmbeddingModel(
-  "BAAI/bge-large-en-v1.5",
+  process.env.EMBEDDING_MODEL || "BAAI/bge-base-en-v1.5",
 );
 
 export async function generateEmbedding(text: string): Promise<number[]> {

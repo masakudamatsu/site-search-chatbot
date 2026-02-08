@@ -172,6 +172,9 @@ export async function crawlWebsite(
       console.log(`Crawling: ${currentUrl}`);
       // Mark the requested URL as visited
       visited.add(currentUrl);
+      console.log(
+        `${visited.size} of ${visited.size + queue.length} pages have been crawled`,
+      );
 
       // 1. Get the content of the page with the shared browser instance
       const pageData = await crawlPage(browser, currentUrl);
