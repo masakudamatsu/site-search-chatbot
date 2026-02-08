@@ -13,6 +13,7 @@ We are transitioning from the prototype phase to a more robust, production-ready
     *   **Search Engine Privacy**: Added `noindex, nofollow` metadata to the root layout to prevent search engines from indexing the test site.
     *   **TDD Verification**: Updated backend tests and added new E2E tests to verify that metadata is correctly displayed, that privacy settings are in place, and that environment variables are properly utilized.
     *   **Documentation**: Updated `README.md` with production setup instructions and new environment variable requirements.
+    *   **Chromium Fix for Vercel**: Refactored the crawler to use `@sparticuz/chromium` and `playwright-core` in production, enabling the crawler to run within Vercel's Serverless Function limits while maintaining local development compatibility.
 
 - **Enhance Answer Quality (Context Enrichment):**
     *   Implemented **Context Enrichment** by prepending Page Title and URL to every text chunk in `src/lib/ingestion.ts`. This resolves the context fragmentation caused by small chunk sizes.

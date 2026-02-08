@@ -44,9 +44,10 @@
     - Implemented a reusable `MetadataDisplay` component to show the active search source and model in the UI.
     - Added `noindex, nofollow` metadata to prevent search engine indexing of the test site.
     - Updated documentation and tests to support dynamic production environments and privacy settings.
+    - Fixed Chromium browser execution for Vercel by implementing a conditional loader using `@sparticuz/chromium`.
 
 ## What's Left to Build
-- **Vercel Deployment**: Final deployment to Vercel and initial ingestion trigger.
+- **Vercel Deployment**: Verification of the Cron Job after the Chromium fix.
 
 ## Deferred Tasks
 ### Web crawler
