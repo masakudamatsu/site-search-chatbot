@@ -17,7 +17,7 @@
     "@ai-sdk/togetherai": "1.0.23",
     "@langchain/core": "1.1.18",
     "@langchain/textsplitters": "1.0.0",
-    "@sparticuz/chromium": "143.0.4",
+    "@sparticuz/chromium-min": "143.0.4",
     "@supabase/supabase-js": "2.84.0",
     "@tailwindcss/postcss": "4.1.14",
     "ai": "5.0.68",
@@ -31,13 +31,13 @@
     "tailwindcss": "4.1.14"
   },
   "devDependencies": {
-    "playwright": "1.56.1",
     "@playwright/test": "1.56.1",
     "@tailwindcss/typography": "0.5.19",
     "@types/node": "24.7.0",
     "@types/react": "19.2.2",
     "dotenv": "17.2.3",
     "jsdom": "27.0.1",
+    "playwright": "1.56.1",
     "typescript": "5.9.3",
     "vitest": "3.2.4"
   }

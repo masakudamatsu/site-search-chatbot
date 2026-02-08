@@ -133,12 +133,14 @@ export async function extractLinks(
 async function getBrowser(): Promise<Browser> {
   if (process.env.VERCEL) {
     // Production (Vercel)
-    const chromium = require("@sparticuz/chromium");
+    const chromium = require("@sparticuz/chromium-min");
     const { chromium: playwright } = require("playwright-core");
     return await playwright.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
+      executablePath: await chromium.executablePath(
+        "https://github.com/Sparticuz/chromium/releases/download/v143.0.4/chromium-v143.0.4-pack.tar",
+      ),
       headless: chromium.headless,
     });
   } else {
