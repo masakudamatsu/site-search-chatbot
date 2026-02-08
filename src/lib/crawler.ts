@@ -1,4 +1,4 @@
-import { chromium, Browser } from "playwright";
+import { Browser } from "playwright-core";
 
 export interface PageData {
   url: string;
@@ -129,13 +129,32 @@ export async function extractLinks(
   }
 }
 
+// Helper to get the correct browser instance based on the environment
+async function getBrowser(): Promise<Browser> {
+  if (process.env.VERCEL) {
+    // Production (Vercel)
+    const chromium = require("@sparticuz/chromium");
+    const { chromium: playwright } = require("playwright-core");
+    return await playwright.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
+    });
+  } else {
+    // Local development
+    const { chromium } = require("playwright");
+    return await chromium.launch();
+  }
+}
+
 // crawlWebsite now manages the browser lifecycle
 export async function crawlWebsite(
   startUrl: string,
   limit: number = 1000,
   onPageCrawled?: (page: PageData) => Promise<void>
 ): Promise<Set<string>> {
-  const browser = await chromium.launch();
+  const browser = await getBrowser();
   // URLs to visit
   const queue: string[] = [startUrl];
   // URLs that have already been processed

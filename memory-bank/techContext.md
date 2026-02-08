@@ -3,7 +3,7 @@
 ## Frameworks & Libraries
 - **Application Framework:** Next.js (for both frontend and backend)
 - **Styling:** Tailwind CSS
-- **Web Scraping:** Playwright
+- **Web Scraping:** `playwright-core` and `@sparticuz/chromium` (serverless Chromium) for production, `playwright` for local development
 - **AI/LLM Orchestration:** LangChain.js (for text splitting)
 - **Frontend AI Integration:** Vercel AI SDK
 - **Markdown Rendering:** `react-markdown` with `remark-gfm`
