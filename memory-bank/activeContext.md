@@ -7,6 +7,9 @@ Our top priority is to finish building a usable, self-contained prototype of the
 We are transitioning from the prototype phase to a more robust, production-ready system.
 
 ## Recently Completed
+- **Ingestion Debugging and Stability:**
+    *   **Embedding Model Upgrade**: Switched to `Alibaba-NLP/gte-modernbert-base` (768 dimensions). This model offers an 8192-token context window, resolving the 512-token limit errors encountered with the previous model.
+    *   **Optimized Chunking**: Increased `chunkSize` to 2000 and `chunkOverlap` to 200 in `src/lib/ingestion.ts` to improve semantic context retention while staying well within the new model's capacity.
 - **Prepare for Production Deployment:**
     *   **Environment Refactor**: Renamed `TARGET_URL` to `NEXT_PUBLIC_TARGET_URL` and introduced `NEXT_PUBLIC_CHAT_MODEL` to make configuration accessible to both frontend and backend.
     *   **Metadata Display**: Created a reusable `MetadataDisplay` component to show the active website and LLM model on the UI, improving transparency and reusability.
