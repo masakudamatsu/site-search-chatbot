@@ -4,12 +4,19 @@ A powerful, open-source RAG (Retrieval-Augmented Generation) chatbot designed to
 
 ## 🚀 Features
 
-- **Conversational Search**: Ask questions in full sentences and get natural language responses.
-- **Accurate Citations**: Every answer includes links back to the source webpages (opening in new tabs).
-- **Smart Automated Ingestion**: **The system includes an automated ingestion system that crawls the target website daily to keep the search index up-to-date.** It skips unchanged pages using `Last-Modified` headers and content checksums to minimize costs and maximize efficiency.
-- **JavaScript Support**: Uses Playwright to crawl dynamic, JavaScript-rendered content.
-- **Open-Source LLMs**: Powered by Together AI's open-source model library.
-- **Privacy First**: Configured with `noindex` metadata to keep your test deployments private.
+- **Conversational Search**:
+    - Ask questions in full sentences and get natural language responses.
+- **Accurate Citations**:
+    - Every answer includes links back to the source webpages (opening in new tabs).
+- **Smart Automated Ingestion**:
+    - The system includes an automated ingestion system that crawls the target website daily to keep the search index up-to-date. It skips unchanged pages using `Last-Modified` headers and content checksums to minimize costs and maximize efficiency.
+    - **Note**: Subject to memory constraints on serverless platforms; see [Known Issues](#production-deployment-with-vercel).
+- **JavaScript Support**:
+    - Uses Playwright to crawl dynamic, JavaScript-rendered content.
+- **Open-Source LLMs**:
+    - Powered by Together AI's open-source model library.
+- **Privacy First**:
+    - Configured with `noindex` metadata to keep your test deployments private.
 
 ## 🛠️ Tech Stack
 
@@ -115,8 +122,11 @@ If you need to switch to a different embedding model, you must ensure it meets t
    2. `supabase/match_documents.sql` (Updates the search function).
    3. `supabase/clear_history.sql` (Wipes crawl history to force re-ingestion).
 
-## 🌐 Production Deployment with Vercel
+## Production Deployment with Vercel
 
+> **⚠️ Known Issue (Vercel Stability)**: 
+> The crawler may occasionally crash on Vercel (Error: "Target page, context or browser has been closed") due to memory constraints on the serverless function. This is a known limitation when running Chromium on the Vercel Hobby tier. Please refer to [Issue #11](https://github.com/masakudamatsu/site-search-chatbot/issues/11) for the latest status.
+ 
 1. **Deploy to Vercel**: Connect your GitHub repository to Vercel.
 2. **Configure Environment Variables**: Add all variables from your `.env.local` to the Vercel project settings.
 3. **First Deployment & Initial Ingestion**: 
