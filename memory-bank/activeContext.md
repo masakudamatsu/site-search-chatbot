@@ -11,6 +11,7 @@ We are transitioning from the prototype phase to a more robust, production-ready
     *   **Embedding Model Upgrade**: Switched to `Alibaba-NLP/gte-modernbert-base` (768 dimensions). This model offers an 8192-token context window, resolving the 512-token limit errors encountered with the previous model.
     *   **Optimized Chunking**: Increased `chunkSize` to 2000 and `chunkOverlap` to 200 in `src/lib/ingestion.ts` to improve semantic context retention while staying well within the new model's capacity.
     *   **Crawler Redirect Strictness**: Implemented an origin check in `src/lib/crawler.ts` to ensure the crawler doesn't follow redirects to external domains, preventing crawler leakage.
+    *   **Supabase Security Hardening**: Enabled Row Level Security (RLS) on `documents` and `crawled_pages` tables. Moved the `vector` extension to a dedicated `extensions` schema and updated the `match_documents` function with a strict `search_path = public, extensions` for enhanced security.
 
 - **Prepare for Production Deployment:**
     *   **Environment Refactor**: Renamed `TARGET_URL` to `NEXT_PUBLIC_TARGET_URL` and introduced `NEXT_PUBLIC_CHAT_MODEL` to make configuration accessible to both frontend and backend.

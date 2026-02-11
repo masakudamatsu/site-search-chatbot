@@ -9,3 +9,6 @@ create table if not exists crawled_pages (
 
 -- Create an index on URL for fast lookups
 create index if not exists idx_crawled_pages_url on crawled_pages(url);
+
+-- Enable RLS
+alter table crawled_pages enable row level security;
