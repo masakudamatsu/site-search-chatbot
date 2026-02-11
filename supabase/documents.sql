@@ -17,3 +17,6 @@ create table documents (
   chunk_index integer,
   embedding vector(768)
 );
+
+-- Enable RLS
+alter table documents enable row level security;
