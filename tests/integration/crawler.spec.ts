@@ -180,4 +180,27 @@ test.describe("crawlWebsite()", () => {
     expect(visited.has(redirectUrl.origin)).toBe(true);
     expect(visited.has(redirectUrl.destination)).toBe(true);
   });
+
+  test("should skip processing if the final URL is on a different origin", async () => {
+    // http://google.com redirects to https://www.google.com
+    // The origins differ (protocol and subdomain), so it should be skipped.
+    const startUrl = "http://google.com/";
+    const processedPages: string[] = [];
+
+    const visited = await crawlWebsite(startUrl, 1, async (page) => {
+      processedPages.push(page.url);
+    });
+
+    // The start URL was visited (attempted)
+    expect(visited.has(startUrl)).toBe(true);
+
+    // The final URL should NOT be processed because it's a different origin
+    expect(processedPages).toHaveLength(0);
+
+    // The final URL should NOT be in the visited set (it was skipped before being added)
+    // Note: We check if any URL in visited contains 'www.google.com'
+    expect(
+      Array.from(visited).some((url) => url.includes("www.google.com")),
+    ).toBe(false);
+  });
 });

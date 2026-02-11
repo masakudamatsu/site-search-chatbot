@@ -48,6 +48,7 @@
     - Migrated to `BAAI/bge-base-en-v1.5` and then subsequently to `Alibaba-NLP/gte-modernbert-base` (768 dims) to resolve token limit issues, and implemented dynamic model configuration via environment variables.
     - Restructured database setup into organized SQL scripts (`supabase/documents.sql`, etc.) and updated them for the new model.
     - Improved crawler logging with real-time progress indicators.
+    - Resolved ingestion authentication issues and implemented strict origin checking for crawler redirects.
     - Optimized chunking strategy (2000 chars) for better semantic context with modern embedding models.
 
 ## What's Left to Build
