@@ -1,5 +1,12 @@
--- Enable the pgvector extension to work with embedding vectors
-create extension if not exists vector;
+-- Create 'extensions' schema if it doesn't exist
+create schema if not exists extensions;
+
+-- Enable the pgvector extension to work with embedding vectors in the 'extensions' schema
+create extension if not exists vector with schema extensions;
+
+-- Set the search path to include public and extensions
+-- This ensures that the vector type can be found by your application
+alter database postgres set search_path to "$user", public, extensions;
 
 -- Drop the table if it exists (useful for schema updates/resets)
 drop table if exists documents;
