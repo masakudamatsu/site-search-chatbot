@@ -16,6 +16,7 @@ returns table (
   similarity float
 )
 language plpgsql
+set search_path = public
 as $$
 begin
   return query
