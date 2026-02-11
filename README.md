@@ -122,7 +122,7 @@ If you need to switch to a different embedding model, you must ensure it meets t
    2. `supabase/match_documents.sql` (Updates the search function).
    3. `supabase/clear_history.sql` (Wipes crawl history to force re-ingestion).
 
-## 🌐 Production Deployment with Vercel
+## Production Deployment with Vercel
 
 > **⚠️ Known Issue (Vercel Stability)**: 
 > The crawler may occasionally crash on Vercel (Error: "Target page, context or browser has been closed") due to memory constraints on the serverless function. This is a known limitation when running Chromium on the Vercel Hobby tier. Please refer to [Issue #11](https://github.com/masakudamatsu/site-search-chatbot/issues/11) for the latest status.
