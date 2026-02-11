@@ -7,16 +7,22 @@ Our top priority is to finish building a usable, self-contained prototype of the
 We are transitioning from the prototype phase to a more robust, production-ready system.
 
 ## Recently Completed
+- **Ingestion Debugging and Stability:**
+    *   **Embedding Model Upgrade**: Switched to `Alibaba-NLP/gte-modernbert-base` (768 dimensions). This model offers an 8192-token context window, resolving the 512-token limit errors encountered with the previous model.
+    *   **Optimized Chunking**: Increased `chunkSize` to 2000 and `chunkOverlap` to 200 in `src/lib/ingestion.ts` to improve semantic context retention while staying well within the new model's capacity.
+    *   **Crawler Redirect Strictness**: Implemented an origin check in `src/lib/crawler.ts` to ensure the crawler doesn't follow redirects to external domains, preventing crawler leakage.
+
 - **Prepare for Production Deployment:**
     *   **Environment Refactor**: Renamed `TARGET_URL` to `NEXT_PUBLIC_TARGET_URL` and introduced `NEXT_PUBLIC_CHAT_MODEL` to make configuration accessible to both frontend and backend.
     *   **Metadata Display**: Created a reusable `MetadataDisplay` component to show the active website and LLM model on the UI, improving transparency and reusability.
     *   **Search Engine Privacy**: Added `noindex, nofollow` metadata to the root layout to prevent search engines from indexing the test site.
     *   **TDD Verification**: Updated backend tests and added new E2E tests to verify that metadata is correctly displayed, that privacy settings are in place, and that environment variables are properly utilized.
     *   **Documentation**: Updated `README.md` with production setup instructions and new environment variable requirements.
-    *   **Chromium Fix for Vercel**: Refactored the crawler to use `@sparticuz/chromium` and `playwright-core` in production, enabling the crawler to run within Vercel's Serverless Function limits while maintaining local development compatibility.
+    *   **Chromium Fix for Vercel**: Refactored the crawler to use `@sparticuz/chromium-min` and `playwright-core` in production. Implemented dynamic architecture detection (`process.arch`) to select the correct binary pack (x64/arm64) and increased function timeout to 60s.
     *   **Embedding Model Migration**: Switched to `BAAI/bge-base-en-v1.5` (768 dimensions) after the previous model was deprecated by Together AI. Refactored the code to use the `EMBEDDING_MODEL` environment variable for better resilience.
     *   **SQL Refactor**: Restructured the `supabase/` folder into task-oriented scripts (`documents.sql`, `crawled_pages.sql`, `match_documents.sql`) and updated all schema definitions to the new 768-dimension requirement.
     *   **Crawler Improvements**: Added real-time progress logging to the crawler, displaying the count of processed pages against total discovered URLs.
+    *   **Vercel Ingestion Status**: Deployment is successful, but the crawler currently crashes on Vercel after the first page ("Target page, context or browser has been closed"). This remains an open issue, likely related to memory limits or environment stability.
 
 - **Enhance Answer Quality (Context Enrichment):**
     *   Implemented **Context Enrichment** by prepending Page Title and URL to every text chunk in `src/lib/ingestion.ts`. This resolves the context fragmentation caused by small chunk sizes.

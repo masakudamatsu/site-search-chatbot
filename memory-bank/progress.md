@@ -45,9 +45,11 @@
     - Added `noindex, nofollow` metadata to prevent search engine indexing of the test site.
     - Updated documentation and tests to support dynamic production environments and privacy settings.
     - Fixed Chromium browser execution for Vercel by implementing a conditional loader using `@sparticuz/chromium`.
-    - Migrated to `BAAI/bge-base-en-v1.5` (768 dims) and implemented dynamic model configuration via environment variables.
+    - Migrated to `BAAI/bge-base-en-v1.5` and then subsequently to `Alibaba-NLP/gte-modernbert-base` (768 dims) to resolve token limit issues, and implemented dynamic model configuration via environment variables.
     - Restructured database setup into organized SQL scripts (`supabase/documents.sql`, etc.) and updated them for the new model.
     - Improved crawler logging with real-time progress indicators.
+    - Resolved ingestion authentication issues and implemented strict origin checking for crawler redirects.
+    - Optimized chunking strategy (2000 chars) for better semantic context with modern embedding models.
 
 ## What's Left to Build
 - **Vercel Deployment**: Final verification of the end-to-end ingestion flow in production.
@@ -59,6 +61,7 @@
 - **Polite Rate-Limiting:** Adding delays between requests.
 - **Header-based Content-Type Verification:** A safety net for non-HTML dynamic URLs.
 
-## Known Issues
+## Known Issues (in the order of importance)
+- **Vercel Crawler Stability**: The browser-based crawler crashes on Vercel after processing the first page ("Target page, context or browser has been closed"). This likely stems from serverless resource limits (memory) or environment-specific Chromium instability during multi-page navigations.
 - **Safari/Firefox UI Freezing**: React Markdown rendering can occupy the main thread, causing UI lag during streaming in Safari and occasional timeouts in Firefox E2E tests (`tests/e2e/chat.spec.ts`).
 - **CI Flakiness**: E2E assertions for database state (`tests/e2e/ingest.spec.ts`) are occasionally flaky due to replication lag and have been temporarily commented out.

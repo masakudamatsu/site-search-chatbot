@@ -162,6 +162,8 @@ export async function crawlWebsite(
   onPageCrawled?: (page: PageData) => Promise<void>,
 ): Promise<Set<string>> {
   const browser = await getBrowser();
+  const startOrigin = new URL(startUrl).origin;
+
   // URLs to visit
   const queue: string[] = [startUrl];
   // URLs that have already been processed
@@ -186,6 +188,14 @@ export async function crawlWebsite(
       // 1. Get the content of the page with the shared browser instance
       const pageData = await crawlPage(browser, currentUrl);
       if (pageData) {
+        // Enforce same-origin policy for redirects
+        if (new URL(pageData.url).origin !== startOrigin) {
+          console.warn(
+            `Skipping off-origin redirect: ${currentUrl} -> ${pageData.url}`,
+          );
+          continue;
+        }
+
         crawledCount++;
         // Also mark the FINAL URL as visited to avoid re-crawling it later
         visited.add(pageData.url);

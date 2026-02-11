@@ -15,8 +15,8 @@ export interface ProcessedChunk {
 
 export async function processPage(data: PageData): Promise<ProcessedChunk[]> {
   const splitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 500,
-    chunkOverlap: 100,
+    chunkSize: 2000,
+    chunkOverlap: 200,
   });
 
   const docs = await splitter.createDocuments(
@@ -28,7 +28,7 @@ export async function processPage(data: PageData): Promise<ProcessedChunk[]> {
         description: data.description,
         lastModified: data.lastModified,
       },
-    ]
+    ],
   );
 
   return docs.map((doc, index) => {
@@ -54,7 +54,7 @@ export type EmbeddingGenerator = (text: string) => Promise<number[]>;
 
 export async function generateEmbeddings(
   chunks: ProcessedChunk[],
-  generator: EmbeddingGenerator
+  generator: EmbeddingGenerator,
 ): Promise<EmbeddingData[]> {
   const results: EmbeddingData[] = [];
 
@@ -79,7 +79,7 @@ export interface SupabaseClientInterface {
     select: (columns: string) => {
       eq: (
         column: string,
-        value: any
+        value: any,
       ) => {
         single: () => PromiseLike<{ data: any; error: any }>;
       };
@@ -97,7 +97,7 @@ export function computeChecksum(content: string): string {
 
 export async function shouldIngestPage(
   page: PageData,
-  client: SupabaseClientInterface
+  client: SupabaseClientInterface,
 ): Promise<boolean> {
   // Check if we have an existing record for this URL
   const { data, error } = await client
@@ -131,7 +131,7 @@ export async function shouldIngestPage(
 
 export async function storeEmbeddings(
   data: EmbeddingData[],
-  supabaseClient: SupabaseClientInterface
+  supabaseClient: SupabaseClientInterface,
 ): Promise<void> {
   if (data.length === 0) return;
 
@@ -145,7 +145,7 @@ export async function storeEmbeddings(
 
   if (deleteError) {
     throw new Error(
-      `Failed to delete existing embeddings: ${deleteError.message}`
+      `Failed to delete existing embeddings: ${deleteError.message}`,
     );
   }
 
@@ -169,7 +169,7 @@ export async function storeEmbeddings(
 
 export async function updateCrawledPage(
   page: PageData,
-  client: SupabaseClientInterface
+  client: SupabaseClientInterface,
 ): Promise<void> {
   const content_hash = computeChecksum(page.content);
 
@@ -189,7 +189,7 @@ export async function updateCrawledPage(
 export async function ingestData(
   page: PageData,
   generator: EmbeddingGenerator,
-  client: SupabaseClientInterface
+  client: SupabaseClientInterface,
 ): Promise<void> {
   // 1. Smart Check
   const shouldIngest = await shouldIngestPage(page, client);
