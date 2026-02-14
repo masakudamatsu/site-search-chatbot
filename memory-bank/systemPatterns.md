@@ -30,3 +30,7 @@ The application will be a monolithic Next.js application, containing both the fr
 
 ## Testing Patterns
 - **Parallel E2E Testing:** To avoid database collisions in parallel workers (where multiple tests might ingest data for the same URL simultaneously), we inject **unique identifiers** into both the ingested content and the test query. This ensures that the RAG retrieval finds the specific document ingested by that worker, even if other workers have ingested similar content.
+- **Database Safety & Cleanup:**
+    - **Principle**: Tests must leave the database in the same state they found it.
+    - **Cleanup Rule**: When adding a new database table, all integration/E2E tests that write to the database must be updated to clean up that new table in their `afterAll` hooks.
+    - **Targeted Deletion**: Always use targeted delete commands (e.g., `.eq("url", testUrl)` or `.like("url", "domain%")`) rather than wiping entire tables (e.g., `.neq("id", -1)`). This protects development data and allows tests to run safely in shared environments.
