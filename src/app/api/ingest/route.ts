@@ -31,6 +31,9 @@ export async function GET(request: NextRequest) {
       await ingestData(page, generateEmbedding, supabase as any);
     });
 
+    // Record the successful completion
+    await supabase.from("crawl_status").insert({ completed_at: new Date() });
+
     return NextResponse.json({
       message: "Ingestion complete",
       visited: Array.from(visited),
@@ -60,6 +63,9 @@ export async function POST(request: Request) {
       console.log(`Ingesting page: ${page.url}`);
       await ingestData(page, generateEmbedding, supabase as any);
     });
+
+    // Record the successful completion
+    await supabase.from("crawl_status").insert({ completed_at: new Date() });
 
     return NextResponse.json({
       message: "Ingestion complete",

@@ -20,9 +20,43 @@ const PAGE_2 = {
 test.describe("POST /api/ingest", () => {
   // After all tests, clean up the database
   test.afterAll(async () => {
-    const { error } = await supabase.from(TABLE_NAME).delete().neq("id", -1); // Delete all rows
-    if (error) {
-      console.error("Failed to clean up documents table:", error);
+    // Delete only the documents ingested during the test
+    const { error: docsError } = await supabase
+      .from(TABLE_NAME)
+      .delete()
+      .like("url", "http://info.cern.ch%");
+
+    if (docsError) {
+      console.error("Failed to clean up documents table:", docsError);
+    }
+
+    // Also clean up the tracking state in crawled_pages
+    const { error: crawlError } = await supabase
+      .from("crawled_pages")
+      .delete()
+      .like("url", "http://info.cern.ch%");
+
+    if (crawlError) {
+      console.error("Failed to clean up crawled_pages table:", crawlError);
+    }
+
+    // Finally, clean up the crawl_status entry created by the API call
+    const { data: latestCrawl } = await supabase
+      .from("crawl_status")
+      .select("id")
+      .order("completed_at", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (latestCrawl) {
+      const { error: statusError } = await supabase
+        .from("crawl_status")
+        .delete()
+        .eq("id", latestCrawl.id);
+
+      if (statusError) {
+        console.error("Failed to clean up crawl_status table:", statusError);
+      }
     }
   });
 

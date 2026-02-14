@@ -50,6 +50,8 @@
     - Improved crawler logging with real-time progress indicators.
     - Resolved ingestion authentication issues and implemented strict origin checking for crawler redirects.
     - Optimized chunking strategy (2000 chars) for better semantic context with modern embedding models.
+    - Implemented "Last crawled" date display on the frontend, backed by a new `crawl_status` database table.
+    - Enhanced the date display to include localized hours and minutes with hydration safety.
 
 ## What's Left to Build
 - **Vercel Deployment**: Final verification of the end-to-end ingestion flow in production.

@@ -27,7 +27,7 @@ describe("Retrieval Integration", () => {
           lastModified: new Date().toISOString(),
         },
         generateEmbedding,
-        supabase
+        supabase,
       );
 
       // 2. Ingest AGAIN to test deduplication
@@ -40,7 +40,7 @@ describe("Retrieval Integration", () => {
           lastModified: new Date().toISOString(),
         },
         generateEmbedding,
-        supabase
+        supabase,
       );
 
       // 3. Query
@@ -64,11 +64,12 @@ describe("Retrieval Integration", () => {
       const uniqueIndices = new Set(chunkIndices);
 
       expect(uniqueIndices.size).toBe(chunkIndices.length);
-    }
+    },
   );
 
   // Cleanup
   afterAll(async () => {
     await supabase.from("documents").delete().eq("url", TEST_URL);
+    await supabase.from("crawled_pages").delete().eq("url", TEST_URL);
   });
 });

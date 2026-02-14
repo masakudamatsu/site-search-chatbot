@@ -17,7 +17,11 @@ vi.mock("@/lib/ai", () => ({
 }));
 
 vi.mock("@/lib/supabase", () => ({
-  supabase: {},
+  supabase: {
+    from: vi.fn().mockReturnValue({
+      insert: vi.fn().mockResolvedValue({ error: null }),
+    }),
+  },
 }));
 
 describe("Ingest API (GET)", () => {
