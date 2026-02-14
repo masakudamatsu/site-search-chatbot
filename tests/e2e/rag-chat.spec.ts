@@ -41,13 +41,23 @@ test.describe("RAG Chat Integration", () => {
 
   test.afterAll(async () => {
     // Clean up: Delete the test document
-    const { error } = await supabase
+    const { error: docError } = await supabase
       .from("documents")
       .delete()
       .eq("url", testUrl);
 
-    if (error) {
-      console.error("Failed to clean up test data:", error);
+    if (docError) {
+      console.error("Failed to clean up test documents:", docError);
+    }
+
+    // Also clean up the tracking state in crawled_pages
+    const { error: crawlError } = await supabase
+      .from("crawled_pages")
+      .delete()
+      .eq("url", testUrl);
+
+    if (crawlError) {
+      console.error("Failed to clean up crawled_pages:", crawlError);
     }
   });
   // TODO: resolve the flakiness of this test
