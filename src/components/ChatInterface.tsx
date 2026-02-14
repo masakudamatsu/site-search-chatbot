@@ -13,7 +13,7 @@ interface ChatInterfaceProps {
 }
 
 const ChatInterface: FC<ChatInterfaceProps> = ({ lastCrawledAt }) => {
-  const { messages, sendMessage, status, stop } = useChat({
+  const { messages, sendMessage, status, stop, error, regenerate } = useChat({
     transport: new DefaultChatTransport({ api: "/api/chat" }),
   });
 
@@ -54,8 +54,24 @@ const ChatInterface: FC<ChatInterfaceProps> = ({ lastCrawledAt }) => {
           <div className="flex-grow overflow-y-auto">
             <div className="mx-auto w-full max-w-2xl p-4">
               <MessageList messages={messages} isStreaming={isStreaming} />
+
+              {error && (
+                <div className="mt-8 flex flex-col items-center justify-center gap-4 text-center">
+                  <p className="text-gray-700">
+                    Our servers are at capacity right now. Please hold
+                    tight—I’ll be ready to chat again very soon.
+                  </p>
+                  <button
+                    onClick={() => regenerate()}
+                    className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+                  >
+                    Ask Again
+                  </button>
+                </div>
+              )}
+
               <div className="flex justify-start">
-                {status === "submitted" && <TypingIndicator />}
+                {status === "submitted" && !error && <TypingIndicator />}
               </div>
             </div>
           </div>
