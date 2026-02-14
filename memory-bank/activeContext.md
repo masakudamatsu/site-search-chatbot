@@ -32,6 +32,13 @@ We are transitioning from the prototype phase to a more robust, production-ready
     *   Updated `README.md` with detailed Supabase initialization and re-ingestion instructions.
     *   Added `supabase/clear-crawl-history.sql` helper script.
 
+- **Show Last Crawled Date:**
+    *   **New Database Table**: Created `crawl_status` to record successful crawl completions.
+    - **Backend Integration**: Updated `/api/ingest` to record a completion timestamp in `crawl_status` upon successful completion.
+    - **Frontend Refactor**: Converted `src/app/page.tsx` to a Server Component for secure data fetching and created `src/components/ChatInterface.tsx` for client-side chat logic.
+    - **UI Enhancement**: Updated `MetadataDisplay.tsx` to show the "Last crawled" date with hours and minutes. Implemented client-side rendering via `useEffect` to ensure correct localization to the user's timezone and resolve hydration mismatches.
+    - **Quality Assurance**: Added an E2E test `tests/e2e/metadata.spec.ts` that verifies the timezone-aware date display by injecting test records and forcing browser timezones.
+
 - **Implement Smart Ingestion & Automation:**
     *   Implemented "Smart Updates" using `Last-Modified` headers and SHA-256 content checksums stored in a new `crawled_pages` table.
     *   Optimized crawler with a 10s timeout and strict origin-matching to handle obsolete/slow links.
