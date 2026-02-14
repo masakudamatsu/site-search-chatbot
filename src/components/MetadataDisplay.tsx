@@ -18,7 +18,7 @@ const MetadataDisplay: FC<MetadataDisplayProps> = ({
   const containerClasses =
     variant === "welcome"
       ? "mt-4 flex flex-col items-center gap-1 text-xs text-gray-400"
-      : "mb-2 flex justify-center gap-4 text-[10px] text-gray-400";
+      : "mb-2 flex flex-col items-end gap-1 text-[10px] text-gray-400";
 
   const formattedDate =
     mounted && lastCrawledAt
