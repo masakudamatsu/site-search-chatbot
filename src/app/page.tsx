@@ -1,69 +1,21 @@
-"use client";
+import ChatInterface from "@/components/ChatInterface";
+import { supabase } from "@/lib/supabase";
 
-import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
-import ChatInput from "@/components/ChatInput";
-import MessageList from "@/components/MessageList";
-import TypingIndicator from "@/components/TypingIndicator";
-import MetadataDisplay from "@/components/MetadataDisplay";
+export const dynamic = "force-dynamic";
 
-export default function Home() {
-  const { messages, sendMessage, status, stop } = useChat({
-    transport: new DefaultChatTransport({ api: "/api/chat" }),
-  });
+export default async function Home() {
+  const { data, error } = await supabase
+    .from("crawl_status")
+    .select("completed_at")
+    .order("completed_at", { ascending: false })
+    .limit(1)
+    .single();
 
-  const handleSendMessage = (message: { text: string }) => {
-    sendMessage({
-      role: "user",
-      parts: [{ type: "text", text: message.text }],
-    });
-  };
+  if (error) {
+    console.error("Error fetching last crawl date:", error);
+  }
 
-  const isLoading = status === "submitted" || status === "streaming";
-  const isStreaming = status === "streaming";
+  const lastCrawledAt = data?.completed_at || null;
 
-  return (
-    <main className="flex h-screen flex-col">
-      {messages.length === 0 ? (
-        // Welcome Screen
-        <div className="flex h-full flex-col items-center justify-center">
-          <div className="mb-4 text-center">
-            <h1 className="text-4xl font-bold">Site Search Chatbot</h1>
-            <p className="text-gray-500">
-              Ask questions about the site content.
-            </p>
-            <MetadataDisplay variant="welcome" />
-          </div>
-
-          <div className="w-full max-w-2xl p-4">
-            <ChatInput
-              onSendMessage={handleSendMessage}
-              isLoading={isLoading}
-              stop={stop}
-            />
-          </div>
-        </div>
-      ) : (
-        // Active Chat
-        <>
-          <div className="flex-grow overflow-y-auto">
-            <div className="mx-auto w-full max-w-2xl p-4">
-              <MessageList messages={messages} isStreaming={isStreaming} />
-              <div className="flex justify-start">
-                {status === "submitted" && <TypingIndicator />}
-              </div>
-            </div>
-          </div>
-          <div className="w-full max-w-2xl self-center p-4">
-            <MetadataDisplay variant="chat" />
-            <ChatInput
-              onSendMessage={handleSendMessage}
-              isLoading={isLoading}
-              stop={stop}
-            />
-          </div>
-        </>
-      )}
-    </main>
-  );
+  return <ChatInterface lastCrawledAt={lastCrawledAt} />;
 }
