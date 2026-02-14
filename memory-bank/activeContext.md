@@ -39,6 +39,8 @@ We are transitioning from the prototype phase to a more robust, production-ready
     - **UI Enhancement**: Updated `MetadataDisplay.tsx` to show the "Last crawled" date with hours and minutes. Implemented client-side rendering via `useEffect` to ensure correct localization to the user's timezone and resolve hydration mismatches.
     - **Quality Assurance**: Added an E2E test `tests/e2e/metadata.spec.ts` that verifies the timezone-aware date display by injecting test records and forcing browser timezones.
     - **Test Integrity**: Refactored `afterAll` hooks in all integration and E2E tests to ensure they correctly clean up metadata tables (`crawled_pages`, `crawl_status`) using targeted, safe deletion logic to protect development data.
+    - **Error Handling**: Implemented a user-friendly error message ("Our servers are at capacity...") and an "Ask Again" retry button in `ChatInterface.tsx` to handle LLM API failures (e.g., 503 errors).
+    - **E2E Validation**: Added `tests/e2e/error-handling.spec.ts` to verify the error UI and retry trigger, using Playwright request interception.
 
 - **Implement Smart Ingestion & Automation:**
     *   Implemented "Smart Updates" using `Last-Modified` headers and SHA-256 content checksums stored in a new `crawled_pages` table.
