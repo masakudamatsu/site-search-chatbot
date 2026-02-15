@@ -100,4 +100,58 @@ describe("crawlPage (Vitest)", () => {
     // Also verify evaluate was NOT called (proving we skipped scraping)
     expect(mocks.evaluate).not.toHaveBeenCalled();
   });
+
+  test("should return null if redirected to an already visited URL", async () => {
+    const startUrl = "http://example.com/about";
+    const redirectUrl = "http://example.com/about/";
+    const visited = new Set(["http://example.com/about/"]);
+
+    // Setup the mock response to simulate a redirect
+    mocks.goto.mockResolvedValue({
+      ok: () => true,
+      status: () => 200,
+      url: () => redirectUrl,
+      headers: () => ({}),
+    });
+
+    // Call crawlPage with visited set
+    const result = await crawlPage(
+      mocks.browser as any,
+      startUrl,
+      undefined,
+      visited,
+    );
+
+    // Verify
+    expect(result).toBeNull();
+    // Also verify evaluate was NOT called
+    expect(mocks.evaluate).not.toHaveBeenCalled();
+  });
+
+  test("should NOT return null if NOT redirected, even if URL is in visited set", async () => {
+    const mockUrl = "http://example.com/page";
+    const visited = new Set([mockUrl]);
+
+    // Setup the mock response
+    mocks.goto.mockResolvedValue({
+      ok: () => true,
+      status: () => 200,
+      url: () => mockUrl, // Same as input URL (no redirect)
+      headers: () => ({}),
+    });
+
+    // Call crawlPage with visited set
+    const result = await crawlPage(
+      mocks.browser as any,
+      mockUrl,
+      undefined,
+      visited,
+    );
+
+    // Verify
+    expect(result).not.toBeNull();
+    expect(result?.url).toBe(mockUrl);
+    // Verify evaluate WAS called (meaning we DID scrape the content)
+    expect(mocks.evaluate).toHaveBeenCalled();
+  });
 });

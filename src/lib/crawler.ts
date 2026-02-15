@@ -13,6 +13,7 @@ export async function crawlPage(
   browser: Browser,
   url: string,
   startOrigin?: string,
+  visited?: Set<string>,
 ): Promise<PageData | null> {
   if (!url) {
     return null;
@@ -33,13 +34,23 @@ export async function crawlPage(
     }
     // Capture the final URL (after any redirects)
     const finalUrl = response.url();
-    const lastModified = response.headers()["last-modified"]; // to check whether to crawl again
+    if (finalUrl !== url) {
+      console.log(`Redirected to: ${finalUrl}`);
 
-    // Enforce same-origin policy for redirects BEFORE scraping
-    if (startOrigin && new URL(finalUrl).origin !== startOrigin) {
-      console.warn(`Skipping off-origin redirect: ${url} -> ${finalUrl}`);
-      return null;
+      // Enforce same-origin policy for redirects BEFORE scraping
+      if (startOrigin && new URL(finalUrl).origin !== startOrigin) {
+        console.warn(`Ingestion skipped due to off-origin redirect`);
+        return null;
+      }
+
+      // Skip scraping if the final URL has already been visited
+      if (visited && visited.has(finalUrl)) {
+        console.log(`Ingestion skipped due to already visited redirect`);
+        return null;
+      }
     }
+
+    const lastModified = response.headers()["last-modified"]; // to check whether to crawl again
 
     const data = await page.evaluate(
       ({ finalUrl, lastModified }) => {
@@ -189,7 +200,12 @@ export async function crawlWebsite(
       console.log(`Crawling: ${currentUrl}`);
       // Mark the requested URL as visited
       visited.add(currentUrl);
-      const pageData = await crawlPage(browser, currentUrl, startOrigin);
+      const pageData = await crawlPage(
+        browser,
+        currentUrl,
+        startOrigin,
+        visited,
+      );
       if (pageData) {
         crawledCount++;
         // Also mark the FINAL URL as visited to avoid re-crawling it later

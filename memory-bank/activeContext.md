@@ -8,7 +8,10 @@ We are transitioning from the prototype phase to a more robust, production-ready
 
 ## Recently Completed
 - **Ingestion Performance and Stability:**
-    *   **Crawler Performance Optimization**: Improved ingestion speed by moving the same-origin check for redirects inside `crawlPage`, executing it *before* the expensive content scraping step. This ensures that off-origin pages are rejected immediately after the redirect is detected.
+    *   **Crawler Performance Optimization**:
+        - Moved same-origin check for redirects inside `crawlPage` to skip scraping off-origin pages.
+        - Implemented early exit in `crawlPage` to skip scraping if a redirect lands on an already visited URL.
+        - Optimized execution order to perform these checks immediately after navigation, before header extraction or content scraping.
     *   **Embedding Model Upgrade**: Switched to `intfloat/multilingual-e5-large-instruct` (1024 dimensions) as Together AI deprecated the previous model. This model has a 512-token context window.
     *   **Optimized Chunking**: Reduced `chunkSize` to 300 and `chunkOverlap` to 50 in `src/lib/ingestion.ts` to stay within the new model's 512-token limit, accounting for metadata enrichment and multilingual (Japanese) token density.
     *   **Crawler Redirect Strictness**: Implemented an origin check in `src/lib/crawler.ts` to ensure the crawler doesn't follow redirects to external domains, preventing crawler leakage.
