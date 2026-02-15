@@ -12,6 +12,7 @@ export interface PageData {
 export async function crawlPage(
   browser: Browser,
   url: string,
+  startOrigin?: string,
 ): Promise<PageData | null> {
   if (!url) {
     return null;
@@ -33,6 +34,12 @@ export async function crawlPage(
     // Capture the final URL (after any redirects)
     const finalUrl = response.url();
     const lastModified = response.headers()["last-modified"]; // to check whether to crawl again
+
+    // Enforce same-origin policy for redirects BEFORE scraping
+    if (startOrigin && new URL(finalUrl).origin !== startOrigin) {
+      console.warn(`Skipping off-origin redirect: ${url} -> ${finalUrl}`);
+      return null;
+    }
 
     const data = await page.evaluate(
       ({ finalUrl, lastModified }) => {
@@ -186,16 +193,8 @@ export async function crawlWebsite(
       );
 
       // 1. Get the content of the page with the shared browser instance
-      const pageData = await crawlPage(browser, currentUrl);
+      const pageData = await crawlPage(browser, currentUrl, startOrigin);
       if (pageData) {
-        // Enforce same-origin policy for redirects
-        if (new URL(pageData.url).origin !== startOrigin) {
-          console.warn(
-            `Skipping off-origin redirect: ${currentUrl} -> ${pageData.url}`,
-          );
-          continue;
-        }
-
         crawledCount++;
         // Also mark the FINAL URL as visited to avoid re-crawling it later
         visited.add(pageData.url);

@@ -78,4 +78,26 @@ describe("crawlPage (Vitest)", () => {
     expect(result?.lastModified).toBe(mockDate);
     expect(result?.url).toBe(mockUrl);
   });
+
+  test("should return null if redirected to a different origin", async () => {
+    const startUrl = "http://example.com/start";
+    const startOrigin = "http://example.com";
+    const redirectUrl = "http://other-domain.com/page";
+
+    // Setup the mock response to simulate a redirect
+    mocks.goto.mockResolvedValue({
+      ok: () => true,
+      status: () => 200,
+      url: () => redirectUrl, // This represents the final URL after redirect
+      headers: () => ({}),
+    });
+
+    // Call crawlPage with startOrigin
+    const result = await crawlPage(mocks.browser as any, startUrl, startOrigin);
+
+    // Verify
+    expect(result).toBeNull();
+    // Also verify evaluate was NOT called (proving we skipped scraping)
+    expect(mocks.evaluate).not.toHaveBeenCalled();
+  });
 });
