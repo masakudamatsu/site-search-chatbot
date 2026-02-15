@@ -34,7 +34,7 @@
 
 ## Web Crawler Implementation
 - **Core Logic (`src/lib/crawler.ts`):**
-  - `crawlPage(url)`: Fetches a single page and extracts its primary text content.
+  - `crawlPage(url, startOrigin?)`: Fetches a single page, verifies the origin after redirection, and extracts its primary text content.
   - `extractLinks(url)`: Parses a page to find all unique, internal, absolute URLs, excluding fragments.
   - `crawlWebsite(startUrl, limit)`: Orchestrates the entire crawl, managing a queue of URLs to visit and aggregating content.
 - **Testing (`tests/integration/crawler.spec.ts`):** An integration test suite verifies the functionality of the crawler functions against live websites.

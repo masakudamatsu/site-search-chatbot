@@ -7,7 +7,8 @@ Our top priority is to finish building a usable, self-contained prototype of the
 We are transitioning from the prototype phase to a more robust, production-ready system.
 
 ## Recently Completed
-- **Ingestion Debugging and Stability:**
+- **Ingestion Performance and Stability:**
+    *   **Crawler Performance Optimization**: Improved ingestion speed by moving the same-origin check for redirects inside `crawlPage`, executing it *before* the expensive content scraping step. This ensures that off-origin pages are rejected immediately after the redirect is detected.
     *   **Embedding Model Upgrade**: Switched to `Alibaba-NLP/gte-modernbert-base` (768 dimensions). This model offers an 8192-token context window, resolving the 512-token limit errors encountered with the previous model.
     *   **Optimized Chunking**: Increased `chunkSize` to 2000 and `chunkOverlap` to 200 in `src/lib/ingestion.ts` to improve semantic context retention while staying well within the new model's capacity.
     *   **Crawler Redirect Strictness**: Implemented an origin check in `src/lib/crawler.ts` to ensure the crawler doesn't follow redirects to external domains, preventing crawler leakage.

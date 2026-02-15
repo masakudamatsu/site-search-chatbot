@@ -13,7 +13,7 @@ The application will be a monolithic Next.js application, containing both the fr
     - **Date Check:** Before processing, the system checks if the `Last-Modified` header matches the stored value. If it matches, the page is skipped.
     - **Checksum Check:** If the date differs (or is missing), the system computes a SHA-256 hash of the page content. If this hash matches the stored `content_hash`, the page is skipped to save embedding costs.
     - **Re-embedding:** Only if both checks fail (implying new or changed content) does the system generate embeddings using the Together.ai API.
-    - **Origin Strictness:** During crawling, the system verifies that the final URL after any redirects still matches the original target origin to prevent leakage to external domains.
+    - **Origin Strictness:** During crawling, the system verifies that the final URL after any redirects still matches the original target origin to prevent leakage to external domains. This check happens inside `crawlPage` before content scraping to optimize performance.
 4.  **Storage:**
     - **Embeddings:** Stored in the `documents` table (pgvector).
     - **State:** Page metadata is updated in the `crawled_pages` table.
