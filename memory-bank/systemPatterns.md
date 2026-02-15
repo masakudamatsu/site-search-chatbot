@@ -15,6 +15,7 @@ The application will be a monolithic Next.js application, containing both the fr
     - **Re-embedding:** Only if both checks fail (implying new or changed content) does the system generate embeddings using the Together.ai API.
     - **Origin Strictness:** During crawling, the system verifies that the final URL after any redirects still matches the original target origin to prevent leakage to external domains.
     - **Redundant Redirect Skip**: If a redirect lands on a URL that has already been visited, the system skips scraping that page. Both this and the origin check happen inside `crawlPage` immediately after navigation to optimize performance.
+    - **Set-based Queue**: The URL queue is implemented as a `Set` to automatically handle duplicate URL discovery and provide accurate progress metrics.
 4.  **Storage:**
     - **Embeddings:** Stored in the `documents` table (pgvector).
     - **State:** Page metadata is updated in the `crawled_pages` table.

@@ -182,15 +182,17 @@ export async function crawlWebsite(
   const browser = await getBrowser();
   const startOrigin = new URL(startUrl).origin;
 
-  // URLs to visit
-  const queue: string[] = [startUrl];
+  // URLs to visit (using a Set to automatically prevent duplicate queuing)
+  const queue = new Set<string>([startUrl]);
   // URLs that have already been processed
   const visited = new Set<string>();
   let crawledCount = 0;
 
   try {
-    while (queue.length > 0 && crawledCount < limit) {
-      const currentUrl = queue.shift()!; // Get the next URL to crawl
+    while (queue.size > 0 && crawledCount < limit) {
+      // Get the next URL to crawl (FIFO order preserved by Set iterator)
+      const currentUrl = queue.values().next().value;
+      queue.delete(currentUrl);
 
       if (visited.has(currentUrl)) {
         continue; // Skip if we've already visited this URL
@@ -220,12 +222,12 @@ export async function crawlWebsite(
         // 4. Add new, unvisited links to the queue
         for (const link of links) {
           if (!visited.has(link)) {
-            queue.push(link);
+            queue.add(link);
           }
         }
       }
       console.log(
-        `${Math.round((visited.size / (visited.size + queue.length)) * 100)}% complete (${visited.size} pages have been crawled)`,
+        `${Math.round((visited.size / (visited.size + queue.size)) * 100)}% complete (${visited.size} pages have been crawled)`,
       );
     }
   } finally {

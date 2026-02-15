@@ -22,6 +22,7 @@
     - Handle HTTP redirects and avoid duplicate processing.
     - Fail fast on slow pages (10s timeout reduced from 30s).
     - **Performance Optimization**: Skips off-origin redirected pages and already-visited redirects *before* content scraping to save time and resources.
+    - **Queue Efficiency**: Uses a `Set` for the URL queue to prevent duplicate entries and ensure accurate progress tracking.
 - A smart data ingestion pipeline (`src/lib/ingestion.ts`) that:
     - Splits page content into chunks (`processPage`).
     - Generates embeddings for each chunk (`generateEmbeddings`).
