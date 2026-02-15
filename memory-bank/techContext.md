@@ -11,7 +11,7 @@
 
 ## Services & Platforms
 - **LLM Hosting:** Together.ai (for `gpt-oss-20b`)
-- **Embedding Generation:** Together.ai (`Alibaba-NLP/gte-modernbert-base`, which is defined in `.env.local`)
+- **Embedding Generation:** Together.ai (`intfloat/multilingual-e5-large-instruct`, which is defined in `.env.local`)
 - **Vector Database:** Supabase pgvector
 - **Deployment:** Vercel
 - **Scheduled Jobs:** Vercel Cron Jobs

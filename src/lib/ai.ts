@@ -10,9 +10,9 @@ const togetherai = createTogetherAI({
   apiKey: process.env.TOGETHER_AI_API_KEY,
 });
 
-// We use the model specified in the environment variables (defaulting to BGE Base if not set)
+// We use the model specified in the environment variables (defaulting to intfloat/multilingual-e5-large-instruct if not set)
 export const embeddingModel = togetherai.textEmbeddingModel(
-  process.env.EMBEDDING_MODEL || "BAAI/bge-base-en-v1.5",
+  process.env.EMBEDDING_MODEL || "intfloat/multilingual-e5-large-instruct",
 );
 
 export async function generateEmbedding(text: string): Promise<number[]> {

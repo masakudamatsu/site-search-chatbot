@@ -1,7 +1,7 @@
 -- Create a function to search for documents
--- NOTE: Embedding dimension is set to 768 to match BAAI/bge-base-en-v1.5.
+-- NOTE: Embedding dimension is set to 1024 to match intfloat/multilingual-e5-large-instruct.
 create or replace function match_documents (
-  query_embedding vector(768),
+  query_embedding vector(1024),
   match_threshold float,
   match_count int
 )

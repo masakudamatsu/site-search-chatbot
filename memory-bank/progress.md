@@ -46,11 +46,11 @@
     - Added `noindex, nofollow` metadata to prevent search engine indexing of the test site.
     - Updated documentation and tests to support dynamic production environments and privacy settings.
     - Fixed Chromium browser execution for Vercel by implementing a conditional loader using `@sparticuz/chromium`.
-    - Migrated to `BAAI/bge-base-en-v1.5` and then subsequently to `Alibaba-NLP/gte-modernbert-base` (768 dims) to resolve token limit issues, and implemented dynamic model configuration via environment variables.
-    - Restructured database setup into organized SQL scripts (`supabase/documents.sql`, etc.) and updated them for the new model.
+    - Migrated to `intfloat/multilingual-e5-large-instruct` (1024 dims) to replace deprecated models, and implemented dynamic model configuration via environment variables.
+    - Restructured database setup into organized SQL scripts (`supabase/documents.sql`, etc.) and updated them for the 1024-dimension requirement.
     - Improved crawler logging with real-time progress indicators.
     - Resolved ingestion authentication issues and implemented strict origin checking for crawler redirects.
-    - Optimized chunking strategy (2000 chars) for better semantic context with modern embedding models.
+    - Optimized chunking strategy (300 chars) for the 512-token limit of the multilingual-e5 model.
     - Implemented "Last crawled" date display on the frontend, backed by a new `crawl_status` database table.
     - Enhanced the date display to include localized hours and minutes with hydration safety.
 
