@@ -185,14 +185,10 @@ export async function crawlWebsite(
         continue; // Skip if we've already visited this URL
       }
 
+      // 1. Get the content of the page with the shared browser instance
       console.log(`Crawling: ${currentUrl}`);
       // Mark the requested URL as visited
       visited.add(currentUrl);
-      console.log(
-        `${visited.size} of ${visited.size + queue.length} pages have been crawled`,
-      );
-
-      // 1. Get the content of the page with the shared browser instance
       const pageData = await crawlPage(browser, currentUrl, startOrigin);
       if (pageData) {
         crawledCount++;
@@ -212,6 +208,9 @@ export async function crawlWebsite(
           }
         }
       }
+      console.log(
+        `${Math.round((visited.size / (visited.size + queue.length)) * 100)}% complete (${visited.size} pages have been crawled)`,
+      );
     }
   } finally {
     await browser.close();
