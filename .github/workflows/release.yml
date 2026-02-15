@@ -32,7 +32,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           semantic_version: 19
-          dry_run: true # Set to false to actually publish releases
           branches: |
             [
               '+([0-9])?(.{+([0-9]),x}).x',
