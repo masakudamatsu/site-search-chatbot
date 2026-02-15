@@ -12,6 +12,8 @@ export interface PageData {
 export async function crawlPage(
   browser: Browser,
   url: string,
+  startOrigin?: string,
+  visited?: Set<string>,
 ): Promise<PageData | null> {
   if (!url) {
     return null;
@@ -32,6 +34,22 @@ export async function crawlPage(
     }
     // Capture the final URL (after any redirects)
     const finalUrl = response.url();
+    if (finalUrl !== url) {
+      console.log(`Redirected to: ${finalUrl}`);
+
+      // Enforce same-origin policy for redirects BEFORE scraping
+      if (startOrigin && new URL(finalUrl).origin !== startOrigin) {
+        console.warn(`Ingestion skipped due to off-origin redirect`);
+        return null;
+      }
+
+      // Skip scraping if the final URL has already been visited
+      if (visited && visited.has(finalUrl)) {
+        console.log(`Ingestion skipped due to already visited redirect`);
+        return null;
+      }
+    }
+
     const lastModified = response.headers()["last-modified"]; // to check whether to crawl again
 
     const data = await page.evaluate(
@@ -164,38 +182,33 @@ export async function crawlWebsite(
   const browser = await getBrowser();
   const startOrigin = new URL(startUrl).origin;
 
-  // URLs to visit
-  const queue: string[] = [startUrl];
+  // URLs to visit (using a Set to automatically prevent duplicate queuing)
+  const queue = new Set<string>([startUrl]);
   // URLs that have already been processed
   const visited = new Set<string>();
   let crawledCount = 0;
 
   try {
-    while (queue.length > 0 && crawledCount < limit) {
-      const currentUrl = queue.shift()!; // Get the next URL to crawl
+    while (queue.size > 0 && crawledCount < limit) {
+      // Get the next URL to crawl (FIFO order preserved by Set iterator)
+      const currentUrl = queue.values().next().value;
+      queue.delete(currentUrl);
 
       if (visited.has(currentUrl)) {
         continue; // Skip if we've already visited this URL
       }
 
+      // 1. Get the content of the page with the shared browser instance
       console.log(`Crawling: ${currentUrl}`);
       // Mark the requested URL as visited
       visited.add(currentUrl);
-      console.log(
-        `${visited.size} of ${visited.size + queue.length} pages have been crawled`,
+      const pageData = await crawlPage(
+        browser,
+        currentUrl,
+        startOrigin,
+        visited,
       );
-
-      // 1. Get the content of the page with the shared browser instance
-      const pageData = await crawlPage(browser, currentUrl);
       if (pageData) {
-        // Enforce same-origin policy for redirects
-        if (new URL(pageData.url).origin !== startOrigin) {
-          console.warn(
-            `Skipping off-origin redirect: ${currentUrl} -> ${pageData.url}`,
-          );
-          continue;
-        }
-
         crawledCount++;
         // Also mark the FINAL URL as visited to avoid re-crawling it later
         visited.add(pageData.url);
@@ -209,10 +222,13 @@ export async function crawlWebsite(
         // 4. Add new, unvisited links to the queue
         for (const link of links) {
           if (!visited.has(link)) {
-            queue.push(link);
+            queue.add(link);
           }
         }
       }
+      console.log(
+        `${Math.round((visited.size / (visited.size + queue.size)) * 100)}% complete (${visited.size} pages have been crawled)`,
+      );
     }
   } finally {
     await browser.close();

@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       : 1000;
     // Start crawling with the ingestion callback
     const visited = await crawlWebsite(targetUrl, limit, async (page) => {
-      console.log(`Ingesting page: ${page.url}`);
+      console.log(`Ingesting page`);
       await ingestData(page, generateEmbedding, supabase as any);
     });
 

@@ -105,10 +105,10 @@ TRUNCATE TABLE crawled_pages;
 If you need to switch to a different embedding model, you must ensure it meets the application's technical requirements:
 
 #### ⚠️ Critical Requirements
-- **Vector Dimensions**: The model must match the dimension defined in your Supabase schema (currently **768**). If the model uses a different dimension (e.g., 1024 or 1536), you must update the database schema and vector search functions (see below).
+- **Vector Dimensions**: The model must match the dimension defined in your Supabase schema (currently **1024**). If the model uses a different dimension (e.g., 1024 or 1536), you must update the database schema and vector search functions (see below).
 - **Context Window & Chunk Size**: The model's context window must be large enough to handle the configured `chunkSize` plus metadata overhead. 
-    - The current `chunkSize` is **2000 characters** (approx. 500-700 tokens).
-    - If using a model with a small context window (e.g., 512 tokens), you **must** reduce the `chunkSize` in `src/lib/ingestion.ts` to ~300 characters to avoid errors.
+    - The current `chunkSize` is **300 characters**.
+    - If using a model with a small context window, you **must** reduce the `chunkSize` in `src/lib/ingestion.ts` to avoid errors.
 
 #### Switching Steps:
 1. **Update Environment Variables**:

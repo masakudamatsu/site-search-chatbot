@@ -7,9 +7,14 @@ Our top priority is to finish building a usable, self-contained prototype of the
 We are transitioning from the prototype phase to a more robust, production-ready system.
 
 ## Recently Completed
-- **Ingestion Debugging and Stability:**
-    *   **Embedding Model Upgrade**: Switched to `Alibaba-NLP/gte-modernbert-base` (768 dimensions). This model offers an 8192-token context window, resolving the 512-token limit errors encountered with the previous model.
-    *   **Optimized Chunking**: Increased `chunkSize` to 2000 and `chunkOverlap` to 200 in `src/lib/ingestion.ts` to improve semantic context retention while staying well within the new model's capacity.
+- **Ingestion Performance and Stability:**
+    *   **Crawler Performance Optimization**:
+        - Moved same-origin check for redirects inside `crawlPage` to skip scraping off-origin pages.
+        - Implemented early exit in `crawlPage` to skip scraping if a redirect lands on an already visited URL.
+        - Optimized execution order to perform these checks immediately after navigation, before header extraction or content scraping.
+        - Refactored the URL queue from an array to a `Set` to automatically prevent duplicate queuing and improve the accuracy of real-time progress logging.
+    *   **Embedding Model Upgrade**: Switched to `intfloat/multilingual-e5-large-instruct` (1024 dimensions) as Together AI deprecated the previous model. This model has a 512-token context window.
+    *   **Optimized Chunking**: Reduced `chunkSize` to 300 and `chunkOverlap` to 50 in `src/lib/ingestion.ts` to stay within the new model's 512-token limit, accounting for metadata enrichment and multilingual (Japanese) token density.
     *   **Crawler Redirect Strictness**: Implemented an origin check in `src/lib/crawler.ts` to ensure the crawler doesn't follow redirects to external domains, preventing crawler leakage.
     *   **Supabase Security Hardening**: Enabled Row Level Security (RLS) on `documents` and `crawled_pages` tables. Moved the `vector` extension to a dedicated `extensions` schema and updated the `match_documents` function with a strict `search_path = public, extensions` for enhanced security.
 
@@ -20,8 +25,8 @@ We are transitioning from the prototype phase to a more robust, production-ready
     *   **TDD Verification**: Updated backend tests and added new E2E tests to verify that metadata is correctly displayed, that privacy settings are in place, and that environment variables are properly utilized.
     *   **Documentation**: Updated `README.md` with production setup instructions and new environment variable requirements.
     *   **Chromium Fix for Vercel**: Refactored the crawler to use `@sparticuz/chromium-min` and `playwright-core` in production. Implemented dynamic architecture detection (`process.arch`) to select the correct binary pack (x64/arm64) and increased function timeout to 60s.
-    *   **Embedding Model Migration**: Switched to `BAAI/bge-base-en-v1.5` (768 dimensions) after the previous model was deprecated by Together AI. Refactored the code to use the `EMBEDDING_MODEL` environment variable for better resilience.
-    *   **SQL Refactor**: Restructured the `supabase/` folder into task-oriented scripts (`documents.sql`, `crawled_pages.sql`, `match_documents.sql`) and updated all schema definitions to the new 768-dimension requirement.
+    *   **Embedding Model Migration**: Switched to `intfloat/multilingual-e5-large-instruct` (1024 dimensions) after the previous model was deprecated by Together AI. Refactored the code to use the `EMBEDDING_MODEL` environment variable for better resilience.
+    *   **SQL Refactor**: Restructured the `supabase/` folder into task-oriented scripts (`documents.sql`, `crawled_pages.sql`, `match_documents.sql`) and updated all schema definitions to the new 1024-dimension requirement.
     *   **Crawler Improvements**: Added real-time progress logging to the crawler, displaying the count of processed pages against total discovered URLs.
     *   **Vercel Ingestion Status**: Deployment is successful, but the crawler currently crashes on Vercel after the first page ("Target page, context or browser has been closed"). This remains an open issue, likely related to memory limits or environment stability.
 

@@ -15,8 +15,8 @@ export interface ProcessedChunk {
 
 export async function processPage(data: PageData): Promise<ProcessedChunk[]> {
   const splitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 2000,
-    chunkOverlap: 200,
+    chunkSize: 300,
+    chunkOverlap: 50,
   });
 
   const docs = await splitter.createDocuments(
@@ -194,7 +194,7 @@ export async function ingestData(
   // 1. Smart Check
   const shouldIngest = await shouldIngestPage(page, client);
   if (!shouldIngest) {
-    console.log(`Skipping unchanged page: ${page.url}`);
+    console.log(`Ingestion skipped due to unchanged contents`);
     // Even if we skip, we might want to touch 'last_crawled_at'.
     // For now, we skip entirely to save DB calls.
     return;

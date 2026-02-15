@@ -12,7 +12,7 @@ alter database postgres set search_path to "$user", public, extensions;
 drop table if exists documents;
 
 -- Create a table to store your documents
--- NOTE: Embedding dimension is set to 768 to match BAAI/bge-base-en-v1.5.
+-- NOTE: Embedding dimension is set to 1024 to match intfloat/multilingual-e5-large-instruct.
 -- If you change the embedding model, you must update this dimension and recreate the table.
 create table documents (
   id bigserial primary key,
@@ -22,7 +22,7 @@ create table documents (
   description text,
   last_modified text,
   chunk_index integer,
-  embedding vector(768)
+  embedding vector(1024)
 );
 
 -- Enable RLS

@@ -11,7 +11,7 @@
 
 ## Services & Platforms
 - **LLM Hosting:** Together.ai (for `gpt-oss-20b`)
-- **Embedding Generation:** Together.ai (`Alibaba-NLP/gte-modernbert-base`, which is defined in `.env.local`)
+- **Embedding Generation:** Together.ai (`intfloat/multilingual-e5-large-instruct`, which is defined in `.env.local`)
 - **Vector Database:** Supabase pgvector
 - **Deployment:** Vercel
 - **Scheduled Jobs:** Vercel Cron Jobs
@@ -34,7 +34,7 @@
 
 ## Web Crawler Implementation
 - **Core Logic (`src/lib/crawler.ts`):**
-  - `crawlPage(url)`: Fetches a single page and extracts its primary text content.
+  - `crawlPage(url, startOrigin?, visited?)`: Fetches a single page, verifies the origin and visited status after redirection, and extracts its primary text content.
   - `extractLinks(url)`: Parses a page to find all unique, internal, absolute URLs, excluding fragments.
   - `crawlWebsite(startUrl, limit)`: Orchestrates the entire crawl, managing a queue of URLs to visit and aggregating content.
 - **Testing (`tests/integration/crawler.spec.ts`):** An integration test suite verifies the functionality of the crawler functions against live websites.
