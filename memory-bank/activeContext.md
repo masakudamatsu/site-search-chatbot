@@ -97,6 +97,21 @@ We are transitioning from the prototype phase to a more robust, production-ready
 - **Initial Crawler Implementation**:
     - Developed the core recursive crawling, content extraction, link discovery, and redirect handling logic.
 
+## Learnings & Discarded Approaches
+- **Manual DOM Traversal vs. `innerText`**:
+    -   *Attempt*: We tried to replace `innerText` with a manual DOM traversal function in the crawler to gain fine-grained control over text structure (injecting `\n\n` vs `\n`).
+    -   *Failure*: This approach destroyed the "visual layout" logic that `innerText` provides natively (e.g., handling table columns, flexbox layouts, and visibility). It resulted in flattened text that confused the LLM, leading to hallucinations where unrelated data points (like separate statistical diagrams) were merged into a single thought.
+    -   *Conclusion*: Browser-native `innerText` is superior for preserving semantic proximity in complex web layouts. Rebuilding layout-aware extraction from scratch is error-prone and leads to hallucinations.
+
+- **Header Marker Injection (`# `)**:
+    -   *Attempt*: We tried injecting `# ` markers into `h1`-`h4` elements before `innerText` extraction to force the splitter to respect header boundaries.
+    -   *Observation*: This change did not lead to a noticeable improvement in the quality of chatbot answers.
+    -   *Conclusion*: Since the added complexity of DOM manipulation didn't yield clear benefits in answer quality, we opted to revert to pure `innerText` extraction and focus on the customizable splitting logic.
+
+- **Splitter Overlap Behavior**:
+    -   *Observation*: `RecursiveCharacterTextSplitter` does not carry over overlap across "hard" separators (like `\n\n`) if the preceding block is a complete unit.
+    -   *Decision*: We accepted this behavior. Maintaining semantic purity at section boundaries (starting chunks with a clear `# Header`) is more important than forced overlap, which can lead to context bleeding.
+
 ## Post-Prototype Enhancements
 - **Re-ranking**: For larger datasets, implement a re-ranking step (fetch 50, re-rank top 10) using a specialized model.
 - **Automated Ingestion**: Set up a Vercel Cron Job to trigger the `/api/ingest` endpoint on a schedule.
