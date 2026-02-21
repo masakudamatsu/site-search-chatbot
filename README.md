@@ -70,6 +70,7 @@ Copy `.env.local.example` to `.env.local` and fill in the required values:
 - `NEXT_PUBLIC_CHAT_MODEL` (The LLM model to use; see [Together AI documentation](https://docs.together.ai/docs/serverless-models#chat-models) for model names such as `openai/gpt-oss-20b`)
 - `EMBEDDING_MODEL` (The embedding model to use; default to `BAAI/bge-base-en-v1.5`)
 - `CRAWL_LIMIT` (The maximum number of webpages to be crawled; default to `1000`)
+- `TEXT_SEPARATORS` (Optional: Custom JSON array of strings to split text. Default: `["\n\n", "\n", ". ", " ", ""]`. For Japanese sites, use `["\n\n", "\n", "。", " ", ""]`); for detail, see [LangChain Docs](https://docs.langchain.com/oss/javascript/integrations/splitters/recursive_text_splitter#splitting-text-from-languages-without-word-boundaries).
 
 ### 6. Testing Ingestion Locally
 You can manually trigger the ingestion process to verify your setup:

@@ -30,9 +30,11 @@ We are transitioning from the prototype phase to a more robust, production-ready
     *   **Crawler Improvements**: Added real-time progress logging to the crawler, displaying the count of processed pages against total discovered URLs.
     *   **Vercel Ingestion Status**: Deployment is successful, but the crawler currently crashes on Vercel after the first page ("Target page, context or browser has been closed"). This remains an open issue, likely related to memory limits or environment stability.
 
-- **Enhance Answer Quality (Context Enrichment):**
-    *   Implemented **Context Enrichment** by prepending Page Title and URL to every text chunk in `src/lib/ingestion.ts`. This resolves the context fragmentation caused by small chunk sizes.
-    *   Refactored the RAG prompt in `src/app/api/chat/route.ts` and the retrieval logic in `src/lib/ai.ts` to remove redundant headers. This resolved the LLM hallucination issue where trailing `】` characters were added to URLs.
+- **Enhance Answer Quality (Text Splitting & Context Enrichment):**
+    *   **Configurable Text Splitting**: Implemented the `TEXT_SEPARATORS` environment variable to allow per-site and per-language customization of the splitting hierarchy.
+    *   **Smarter Default Separators**: Updated default separators to `["\n\n", "\n", ". ", " ", ""]` to improve semantic coherence by prioritizing sentence-level breaks over mid-sentence word splits.
+    *   **Context Enrichment**: Prepending Page Title and URL to every text chunk in `src/lib/ingestion.ts` to maintain semantic context across small chunks.
+    *   Refactored the RAG prompt in `src/app/api/chat/route.ts` and the retrieval logic in `src/lib/ai.ts` to remove redundant headers.
     *   Updated E2E and unit tests to verify the enrichment logic and ensure retrieval stability.
     *   Updated `README.md` with detailed Supabase initialization and re-ingestion instructions.
     *   Added `supabase/clear-crawl-history.sql` helper script.
@@ -94,6 +96,21 @@ We are transitioning from the prototype phase to a more robust, production-ready
     - Followed TDD with a comprehensive integration test suite.
 - **Initial Crawler Implementation**:
     - Developed the core recursive crawling, content extraction, link discovery, and redirect handling logic.
+
+## Learnings & Discarded Approaches
+- **Manual DOM Traversal vs. `innerText`**:
+    -   *Attempt*: We tried to replace `innerText` with a manual DOM traversal function in the crawler to gain fine-grained control over text structure (injecting `\n\n` vs `\n`).
+    -   *Failure*: This approach destroyed the "visual layout" logic that `innerText` provides natively (e.g., handling table columns, flexbox layouts, and visibility). It resulted in flattened text that confused the LLM, leading to hallucinations where unrelated data points (like separate statistical diagrams) were merged into a single thought.
+    -   *Conclusion*: Browser-native `innerText` is superior for preserving semantic proximity in complex web layouts. Rebuilding layout-aware extraction from scratch is error-prone and leads to hallucinations.
+
+- **Header Marker Injection (`# `)**:
+    -   *Attempt*: We tried injecting `# ` markers into `h1`-`h4` elements before `innerText` extraction to force the splitter to respect header boundaries.
+    -   *Observation*: This change did not lead to a noticeable improvement in the quality of chatbot answers.
+    -   *Conclusion*: Since the added complexity of DOM manipulation didn't yield clear benefits in answer quality, we opted to revert to pure `innerText` extraction and focus on the customizable splitting logic.
+
+- **Splitter Overlap Behavior**:
+    -   *Observation*: `RecursiveCharacterTextSplitter` does not carry over overlap across "hard" separators (like `\n\n`) if the preceding block is a complete unit.
+    -   *Decision*: We accepted this behavior. Maintaining semantic purity at section boundaries (starting chunks with a clear `# Header`) is more important than forced overlap, which can lead to context bleeding.
 
 ## Post-Prototype Enhancements
 - **Re-ranking**: For larger datasets, implement a re-ranking step (fetch 50, re-rank top 10) using a specialized model.

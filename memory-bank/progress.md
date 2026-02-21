@@ -39,7 +39,10 @@
 - Scheduled daily ingestion configured via `vercel.json`.
 - Standardized test scripts in `package.json` (`test:vitest`, `test:playwright`, `test:regression`).
 - Comprehensive documentation in `README.md` for local testing, Supabase initialization, and production deployment.
-- **Answer Quality Enhancement (Context Enrichment)**: Every text chunk now contains its source Page Title and URL, resolving context fragmentation and improving retrieval accuracy.
+- **Answer Quality Enhancement (Text Splitting & Context Enrichment)**:
+    -   Implemented a **Configurable Text Splitting** system using the `TEXT_SEPARATORS` environment variable.
+    -   Upgraded default separators to `["\n\n", "\n", ". ", " ", ""]` to ensure chunks break at semantic boundaries (sentences) rather than mid-sentence words.
+    -   Every text chunk now contains its source Page Title and URL, resolving context fragmentation and improving retrieval accuracy.
 - **RAG Prompt Optimization**: Streamlined the context format by removing redundant headers and instructing the LLM to use internal metadata for accurate citations.
 - **Production Deployment Readiness**: 
     - Exposed critical configurations (Target URL, Chat Model) via `NEXT_PUBLIC_` environment variables for visibility and reusability.
