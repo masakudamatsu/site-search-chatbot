@@ -30,9 +30,11 @@ We are transitioning from the prototype phase to a more robust, production-ready
     *   **Crawler Improvements**: Added real-time progress logging to the crawler, displaying the count of processed pages against total discovered URLs.
     *   **Vercel Ingestion Status**: Deployment is successful, but the crawler currently crashes on Vercel after the first page ("Target page, context or browser has been closed"). This remains an open issue, likely related to memory limits or environment stability.
 
-- **Enhance Answer Quality (Context Enrichment):**
-    *   Implemented **Context Enrichment** by prepending Page Title and URL to every text chunk in `src/lib/ingestion.ts`. This resolves the context fragmentation caused by small chunk sizes.
-    *   Refactored the RAG prompt in `src/app/api/chat/route.ts` and the retrieval logic in `src/lib/ai.ts` to remove redundant headers. This resolved the LLM hallucination issue where trailing `】` characters were added to URLs.
+- **Enhance Answer Quality (Text Splitting & Context Enrichment):**
+    *   **Configurable Text Splitting**: Implemented the `TEXT_SEPARATORS` environment variable to allow per-site and per-language customization of the splitting hierarchy.
+    *   **Smarter Default Separators**: Updated default separators to `["\n\n", "\n", ". ", " ", ""]` to improve semantic coherence by prioritizing sentence-level breaks over mid-sentence word splits.
+    *   **Context Enrichment**: Prepending Page Title and URL to every text chunk in `src/lib/ingestion.ts` to maintain semantic context across small chunks.
+    *   Refactored the RAG prompt in `src/app/api/chat/route.ts` and the retrieval logic in `src/lib/ai.ts` to remove redundant headers.
     *   Updated E2E and unit tests to verify the enrichment logic and ensure retrieval stability.
     *   Updated `README.md` with detailed Supabase initialization and re-ingestion instructions.
     *   Added `supabase/clear-crawl-history.sql` helper script.

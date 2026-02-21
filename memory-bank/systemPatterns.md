@@ -20,6 +20,7 @@ The application will be a monolithic Next.js application, containing both the fr
     - **Embeddings:** Stored in the `documents` table (pgvector).
     - **State:** Page metadata is updated in the `crawled_pages` table.
     - **Deduplication:** Existing embeddings for the URL are deleted before inserting new ones.
+- **Configurable Text Splitting:** The ingestion process uses `RecursiveCharacterTextSplitter` with a hierarchical list of separators. These can be overridden via the `TEXT_SEPARATORS` environment variable (JSON array format), allowing for language-specific optimization (e.g., using `。` instead of `. ` for Japanese).
 
 ## Query and Response Flow
 1.  **User Input:** The user sends a question through the Next.js frontend.

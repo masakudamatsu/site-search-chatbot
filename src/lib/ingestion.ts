@@ -14,9 +14,20 @@ export interface ProcessedChunk {
 }
 
 export async function processPage(data: PageData): Promise<ProcessedChunk[]> {
+  // Determine separators from environment variable or use default
+  let separators: string[] = ["\n\n", "\n", ". ", " ", ""];
+  if (process.env.TEXT_SEPARATORS) {
+    try {
+      separators = JSON.parse(process.env.TEXT_SEPARATORS);
+    } catch (e) {
+      console.warn("Failed to parse TEXT_SEPARATORS env var, using default.");
+    }
+  }
+
   const splitter = new RecursiveCharacterTextSplitter({
     chunkSize: 300,
     chunkOverlap: 50,
+    separators,
   });
 
   const docs = await splitter.createDocuments(
