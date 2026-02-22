@@ -84,7 +84,7 @@ export async function POST(request: Request) {
         if (page.content === null) {
           return;
         }
-        console.log(`Ingesting page: ${page.url}`);
+        console.log(`Ingesting page`);
         await ingestData(page, generateEmbedding, supabase as any);
       },
       targetSubdirectory,
