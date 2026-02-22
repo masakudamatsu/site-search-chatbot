@@ -102,6 +102,7 @@ export async function crawlPage(
 export async function extractLinks(
   browser: Browser,
   url: string,
+  removeQueryParams: boolean = false,
 ): Promise<string[]> {
   if (!url) {
     return [];
@@ -113,44 +114,53 @@ export async function extractLinks(
 
     const pageOrigin = new URL(url).origin;
 
-    const links = await page.evaluate((pageOrigin) => {
-      const allLinks = Array.from(document.querySelectorAll("a"));
-      const internalLinks = new Set<string>();
+    const links = await page.evaluate(
+      ({ pageOrigin, removeQueryParams }) => {
+        const allLinks = Array.from(document.querySelectorAll("a"));
+        const internalLinks = new Set<string>();
 
-      const ignoredExtensions = [
-        ".pdf",
-        ".jpg",
-        ".jpeg",
-        ".png",
-        ".gif",
-        ".zip",
-        ".docx",
-        ".xlsx",
-        ".pptx",
-      ]; // crawler.spec.ts tests `.pdf` only, though
+        const ignoredExtensions = [
+          ".pdf",
+          ".jpg",
+          ".jpeg",
+          ".png",
+          ".gif",
+          ".zip",
+          ".docx",
+          ".xlsx",
+          ".pptx",
+        ]; // crawler.spec.ts tests `.pdf` only, though
 
-      for (const link of allLinks) {
-        // Convert into absolute path by attaching `document.baseURI`, which is typically the current directory.
-        const urlObj = new URL(link.href, document.baseURI);
+        for (const link of allLinks) {
+          // Convert into absolute path by attaching `document.baseURI`, which is typically the current directory.
+          const urlObj = new URL(link.href, document.baseURI);
 
-        // Remove the hash from the URL
-        urlObj.hash = "";
-        const absoluteUrl = urlObj.href;
-        const pathname = urlObj.pathname.toLowerCase();
+          // Remove the hash from the URL
+          urlObj.hash = "";
 
-        // Check if it ends with an ignored extension
-        if (ignoredExtensions.some((ext) => pathname.endsWith(ext))) {
-          continue;
+          // Optionally remove query parameters
+          if (removeQueryParams) {
+            urlObj.search = "";
+          }
+
+          const absoluteUrl = urlObj.href;
+          const pathname = urlObj.pathname.toLowerCase();
+
+          // Check if it ends with an ignored extension
+          if (ignoredExtensions.some((ext) => pathname.endsWith(ext))) {
+            continue;
+          }
+
+          // Keep link URLs only if it's in the same origin
+          if (urlObj.origin === pageOrigin) {
+            internalLinks.add(absoluteUrl);
+          }
         }
 
-        // Keep link URLs only if it's in the same origin
-        if (urlObj.origin === pageOrigin) {
-          internalLinks.add(absoluteUrl);
-        }
-      }
-
-      return Array.from(internalLinks);
-    }, pageOrigin); // Pass the page's origin from Node.js to the browser context.
+        return Array.from(internalLinks);
+      },
+      { pageOrigin, removeQueryParams },
+    ); // Pass the page's origin from Node.js to the browser context.
 
     return links;
   } catch (error) {
@@ -193,6 +203,7 @@ export async function crawlWebsite(
   limit: number = 1000,
   onPageCrawled?: (page: PageData) => Promise<void>,
   targetSubdirectory?: string,
+  removeQueryParams: boolean = false,
 ): Promise<Set<string>> {
   const browser = await getBrowser();
   const startOrigin = new URL(startUrl).origin;
@@ -234,7 +245,11 @@ export async function crawlWebsite(
           await onPageCrawled(pageData);
         }
         // 3. Find all the links on the page with the shared browser instance
-        const links = await extractLinks(browser, pageData.url);
+        const links = await extractLinks(
+          browser,
+          pageData.url,
+          removeQueryParams,
+        );
         // 4. Add new, unvisited links to the queue
         for (const link of links) {
           if (!visited.has(link)) {

@@ -27,6 +27,8 @@ export async function GET(request: NextRequest) {
     const limit = process.env.CRAWL_LIMIT
       ? parseInt(process.env.CRAWL_LIMIT)
       : 1000;
+    const removeQueryParams = process.env.REMOVE_QUERY_PARAMS === "true";
+
     // Start crawling with the ingestion callback
     const visited = await crawlWebsite(
       targetUrl,
@@ -40,6 +42,7 @@ export async function GET(request: NextRequest) {
         await ingestData(page, generateEmbedding, supabase as any);
       },
       targetSubdirectory,
+      removeQueryParams,
     );
 
     // Record the successful completion
@@ -70,6 +73,7 @@ export async function POST(request: Request) {
     }
 
     const targetSubdirectory = process.env.NEXT_PUBLIC_TARGET_URL_SUBDIRECTORY;
+    const removeQueryParams = process.env.REMOVE_QUERY_PARAMS === "true";
 
     // Start crawling with the ingestion callback
     const visited = await crawlWebsite(
@@ -84,6 +88,7 @@ export async function POST(request: Request) {
         await ingestData(page, generateEmbedding, supabase as any);
       },
       targetSubdirectory,
+      removeQueryParams,
     );
 
     // Record the successful completion
