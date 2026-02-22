@@ -18,6 +18,8 @@
     - Extract text content, prioritizing the `<main>` element.
     - Discover and follow internal links within the same origin while ignoring URL fragments.
     - Filter out links with non-HTML extensions (PDFs, images, etc.).
+    - **Subdirectory Restriction**: Optionally restricts content scraping to a specific path (configurable via `NEXT_PUBLIC_TARGET_URL_SUBDIRECTORY`) while maintaining full-domain link discovery.
+    - **URL Normalization**: Optionally strips query strings from discovered links (configurable via `REMOVE_QUERY_PARAMS`) to prevent duplicate ingestion of tracked URLs.
     - Extract page metadata (title, description, Last-Modified header).
     - Handle HTTP redirects and avoid duplicate processing.
     - Fail fast on slow pages (10s timeout reduced from 30s).
@@ -63,10 +65,9 @@
 
 ## Deferred Tasks
 ### Web crawler
-- **URL Normalization:** Stripping tracking parameters.
-- **`robots.txt` Compliance:** Respecting crawler exclusion rules.
-- **Polite Rate-Limiting:** Adding delays between requests.
-- **Header-based Content-Type Verification:** A safety net for non-HTML dynamic URLs.
+- **`robots.txt` Compliance**: Respecting crawler exclusion rules.
+- **Polite Rate-Limiting**: Adding delays between requests.
+- **Header-based Content-Type Verification**: A safety net for non-HTML dynamic URLs.
 
 ## Known Issues (in the order of importance)
 - **Vercel Crawler Stability**: The browser-based crawler crashes on Vercel after processing the first page ("Target page, context or browser has been closed"). This likely stems from serverless resource limits (memory) or environment-specific Chromium instability during multi-page navigations.

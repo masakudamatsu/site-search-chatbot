@@ -25,7 +25,7 @@
 - **Test Execution:** The project has two primary test scripts:
   - `npm test`: Runs the Playwright suite on Chromium only. This is the recommended command for quick, iterative development.
   - `npm run test:all`: Runs the Playwright suite on all configured browsers (Chromium, Firefox, WebKit), which is suitable for CI or pre-commit checks.
-- **Configuration:** Environment variables will be used to manage settings like the target website URL, LLM model, cron job frequency, and text splitting separators (`TEXT_SEPARATORS`).
+- **Configuration:** Environment variables will be used to manage settings like the target website URL, LLM model, cron job frequency, text splitting separators (`TEXT_SEPARATORS`), and optional crawler features like subdirectory restriction (`NEXT_PUBLIC_TARGET_URL_SUBDIRECTORY`) and query parameter removal (`REMOVE_QUERY_PARAMS`).
 - **Testing Streaming Responses:** Attempts to mock streaming API responses with Playwright's `route.fulfill()` have failed, as its `body` property does not accept a `ReadableStream`. The established pattern for this project is to test features that rely on streaming against the real API, using carefully timed assertions to validate UI states during the stream.
  
 
@@ -34,9 +34,9 @@
 
 ## Web Crawler Implementation
 - **Core Logic (`src/lib/crawler.ts`):**
-  - `crawlPage(url, startOrigin?, visited?)`: Fetches a single page, verifies the origin and visited status after redirection, and extracts its primary text content.
-  - `extractLinks(url)`: Parses a page to find all unique, internal, absolute URLs, excluding fragments.
-  - `crawlWebsite(startUrl, limit)`: Orchestrates the entire crawl, managing a queue of URLs to visit and aggregating content.
+  - `crawlPage(browser, url, startOrigin?, visited?, targetSubdirectory?)`: Fetches a single page, verifies the origin and visited status after redirection, and extracts its primary text content *only if* it matches the target subdirectory.
+  - `extractLinks(browser, url, removeQueryParams?)`: Parses a page to find all unique, internal, absolute URLs, excluding fragments and optionally stripping query strings for deduplication.
+  - `crawlWebsite(startUrl, limit, onPageCrawled?, targetSubdirectory?, removeQueryParams?)`: Orchestrates the entire crawl, managing a queue of URLs to visit and aggregating content.
 - **Testing (`tests/integration/crawler.spec.ts`):** An integration test suite verifies the functionality of the crawler functions against live websites.
 
 ## Coding Standards & References

@@ -203,4 +203,34 @@ test.describe("crawlWebsite()", () => {
       Array.from(visited).some((url) => url.includes("www.google.com")),
     ).toBe(false);
   });
+
+  test("should traverse pages outside subdirectory but only scrape pages inside", async () => {
+    const startUrl = "http://info.cern.ch/"; // Outside
+    const targetSubdirectory = "http://info.cern.ch/hypertext/WWW/"; // Inside
+
+    const scrapedPages: string[] = [];
+    const visitedUrls: string[] = [];
+
+    await crawlWebsite(
+      startUrl,
+      5,
+      async (page) => {
+        visitedUrls.push(page.url);
+        if (page.content !== null) {
+          scrapedPages.push(page.url);
+        }
+      },
+      targetSubdirectory,
+    );
+
+    // 1. Start URL should be visited (to find links)
+    expect(visitedUrls).toContain(startUrl);
+
+    // 2. Start URL should NOT be scraped (content is null)
+    expect(scrapedPages).not.toContain(startUrl);
+
+    // 3. A page inside the subdirectory should be scraped
+    const insidePage = "http://info.cern.ch/hypertext/WWW/TheProject.html";
+    expect(scrapedPages).toContain(insidePage);
+  });
 });

@@ -1,5 +1,5 @@
 import { describe, test, expect, vi, beforeEach } from "vitest";
-import { crawlPage } from "@/lib/crawler";
+import { crawlPage, extractLinks } from "@/lib/crawler";
 
 // Define mocks that are hoisted to the top of the file
 const mocks = vi.hoisted(() => {
@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => {
   const evaluate = vi.fn();
   const close = vi.fn();
   const url = vi.fn(); // just for completeness
+  const title = vi.fn();
   const newPage = vi.fn();
 
   const page = {
@@ -14,6 +15,7 @@ const mocks = vi.hoisted(() => {
     evaluate,
     close,
     url, // just for completeness
+    title,
   };
 
   const browser = {
@@ -26,6 +28,7 @@ const mocks = vi.hoisted(() => {
     evaluate,
     close,
     url,
+    title,
     newPage,
     page,
     browser,
@@ -153,5 +156,193 @@ describe("crawlPage (Vitest)", () => {
     expect(result?.url).toBe(mockUrl);
     // Verify evaluate WAS called (meaning we DID scrape the content)
     expect(mocks.evaluate).toHaveBeenCalled();
+  });
+
+  describe("targetSubdirectory restriction", () => {
+    const targetSubdirectory = "http://example.com/articles/";
+
+    test("should skip scraping content if URL is outside targetSubdirectory", async () => {
+      const mockUrl = "http://example.com/courses/page";
+
+      mocks.goto.mockResolvedValue({
+        ok: () => true,
+        status: () => 200,
+        url: () => mockUrl,
+        headers: () => ({}),
+      });
+      mocks.title.mockResolvedValue("Page Title");
+
+      const result = await crawlPage(
+        mocks.browser as any,
+        mockUrl,
+        undefined,
+        undefined,
+        targetSubdirectory,
+      );
+
+      expect(result).not.toBeNull();
+      expect(result?.url).toBe(mockUrl);
+      expect(result?.content).toBeNull();
+      expect(mocks.evaluate).not.toHaveBeenCalled();
+    });
+
+    test("should scrape content if URL is inside targetSubdirectory", async () => {
+      const mockUrl = "http://example.com/articles/how-to-scrape";
+
+      mocks.goto.mockResolvedValue({
+        ok: () => true,
+        status: () => 200,
+        url: () => mockUrl,
+        headers: () => ({}),
+      });
+
+      const result = await crawlPage(
+        mocks.browser as any,
+        mockUrl,
+        undefined,
+        undefined,
+        targetSubdirectory,
+      );
+
+      expect(result).not.toBeNull();
+      expect(result?.url).toBe(mockUrl);
+      expect(result?.content).not.toBeNull();
+      expect(mocks.evaluate).toHaveBeenCalled();
+    });
+
+    test("should scrape content if targetSubdirectory is NOT provided", async () => {
+      const mockUrl = "http://example.com/anywhere";
+
+      mocks.goto.mockResolvedValue({
+        ok: () => true,
+        status: () => 200,
+        url: () => mockUrl,
+        headers: () => ({}),
+      });
+
+      const result = await crawlPage(mocks.browser as any, mockUrl);
+
+      expect(result).not.toBeNull();
+      expect(result?.content).not.toBeNull();
+      expect(mocks.evaluate).toHaveBeenCalled();
+    });
+
+    test("should handle redirects: outside to inside -> should scrape", async () => {
+      const startUrl = "http://example.com/redirect-me";
+      const finalUrl = "http://example.com/articles/welcome";
+
+      mocks.goto.mockResolvedValue({
+        ok: () => true,
+        status: () => 200,
+        url: () => finalUrl,
+        headers: () => ({}),
+      });
+
+      const result = await crawlPage(
+        mocks.browser as any,
+        startUrl,
+        undefined,
+        undefined,
+        targetSubdirectory,
+      );
+
+      expect(result?.url).toBe(finalUrl);
+      expect(result?.content).not.toBeNull();
+      expect(mocks.evaluate).toHaveBeenCalled();
+    });
+
+    test("should handle redirects: inside to outside -> should skip scrape", async () => {
+      const startUrl = "http://example.com/articles/redirect-out";
+      const finalUrl = "http://example.com/other-place";
+
+      mocks.goto.mockResolvedValue({
+        ok: () => true,
+        status: () => 200,
+        url: () => finalUrl,
+        headers: () => ({}),
+      });
+      mocks.title.mockResolvedValue("Page Title");
+
+      const result = await crawlPage(
+        mocks.browser as any,
+        startUrl,
+        undefined,
+        undefined,
+        targetSubdirectory,
+      );
+
+      expect(result?.url).toBe(finalUrl);
+      expect(result?.content).toBeNull();
+      expect(mocks.evaluate).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("extractLinks (Vitest)", () => {
+    const mockUrl = "http://example.com/page";
+
+    beforeEach(() => {
+      mocks.goto.mockResolvedValue({
+        ok: () => true,
+        status: () => 200,
+        url: () => mockUrl,
+      });
+
+      // Mock JSDOM baseURI
+      Object.defineProperty(document, "baseURI", {
+        value: "http://example.com/",
+        configurable: true,
+      });
+    });
+
+    test("should remove query params when removeQueryParams is true", async () => {
+      const linksWithQueries = [
+        "http://example.com/a?foo=bar",
+        "http://example.com/b/?baz=qux",
+      ];
+
+      // Mock the browser evaluate function to simulate finding these links
+      mocks.evaluate.mockImplementation(
+        async (fn: any, { pageOrigin, removeQueryParams }: any) => {
+          // Inside the evaluate function, we simulate what the browser does
+          // Note: we're using a simplified version for testing the logic
+          const results = linksWithQueries.map((link) => {
+            const urlObj = new URL(link, "http://example.com/");
+            if (removeQueryParams) {
+              urlObj.search = "";
+            }
+            return urlObj.href;
+          });
+          return results;
+        },
+      );
+
+      const links = await extractLinks(mocks.browser as any, mockUrl, true);
+
+      expect(links).toContain("http://example.com/a");
+      expect(links).toContain("http://example.com/b/");
+      expect(links).not.toContain("http://example.com/a?foo=bar");
+      expect(links).not.toContain("http://example.com/b/?baz=qux");
+    });
+
+    test("should NOT remove query params when removeQueryParams is false", async () => {
+      const linksWithQueries = ["http://example.com/a?foo=bar"];
+
+      mocks.evaluate.mockImplementation(
+        async (fn: any, { pageOrigin, removeQueryParams }: any) => {
+          const results = linksWithQueries.map((link) => {
+            const urlObj = new URL(link, "http://example.com/");
+            if (removeQueryParams) {
+              urlObj.search = "";
+            }
+            return urlObj.href;
+          });
+          return results;
+        },
+      );
+
+      const links = await extractLinks(mocks.browser as any, mockUrl, false);
+
+      expect(links).toContain("http://example.com/a?foo=bar");
+    });
   });
 });

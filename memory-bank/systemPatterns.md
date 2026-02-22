@@ -14,7 +14,9 @@ The application will be a monolithic Next.js application, containing both the fr
     - **Checksum Check:** If the date differs (or is missing), the system computes a SHA-256 hash of the page content. If this hash matches the stored `content_hash`, the page is skipped to save embedding costs.
     - **Re-embedding:** Only if both checks fail (implying new or changed content) does the system generate embeddings using the Together.ai API.
     - **Origin Strictness:** During crawling, the system verifies that the final URL after any redirects still matches the original target origin to prevent leakage to external domains.
+    - **Subdirectory Filtering**: The system can optionally restrict content scraping to a specific path (e.g., `/articles/`). This is implemented as a check inside `crawlPage` *after* redirects are resolved. Pages outside the path are still followed for links but their content is not scraped or ingested.
     - **Redundant Redirect Skip**: If a redirect lands on a URL that has already been visited, the system skips scraping that page. Both this and the origin check happen inside `crawlPage` immediately after navigation to optimize performance.
+    - **URL Normalization & Deduplication**: Discovered links can be optionally stripped of query parameters. This prevents duplicate ingestion of the same content reachable via multiple tracking URLs (e.g., `?utm_source=...`).
     - **Set-based Queue**: The URL queue is implemented as a `Set` to automatically handle duplicate URL discovery and provide accurate progress metrics.
 4.  **Storage:**
     - **Embeddings:** Stored in the `documents` table (pgvector).

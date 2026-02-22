@@ -75,6 +75,10 @@ describe("Ingest API (GET)", () => {
   test("should trigger crawling if authorized and configured", async () => {
     process.env.CRON_SECRET = "secret123";
     process.env.NEXT_PUBLIC_TARGET_URL = "http://example.com";
+    // Set deterministic values for optional env vars
+    process.env.NEXT_PUBLIC_TARGET_URL_SUBDIRECTORY = "/target/";
+    process.env.REMOVE_QUERY_PARAMS = "true";
+    process.env.CRAWL_LIMIT = "100";
 
     // Mock crawlWebsite to return a Set
     (crawlWebsite as any).mockResolvedValue(new Set(["http://example.com"]));
@@ -89,8 +93,10 @@ describe("Ingest API (GET)", () => {
 
     expect(crawlWebsite).toHaveBeenCalledWith(
       "http://example.com",
-      1000,
+      100,
       expect.any(Function),
+      "/target/",
+      true,
     );
   });
 });
