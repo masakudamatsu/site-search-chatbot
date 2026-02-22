@@ -39,8 +39,16 @@ We are transitioning from the prototype phase to a more robust, production-ready
     *   Updated `README.md` with detailed Supabase initialization and re-ingestion instructions.
     *   Added `supabase/clear-crawl-history.sql` helper script.
 
+- **Crawler Subdirectory Restriction & Deduplication:**
+    *   **Subdirectory Filtering**: Implemented `NEXT_PUBLIC_TARGET_URL_SUBDIRECTORY` to optionally restrict content scraping to a specific path. The crawler still traverses the entire domain to discover links but skips ingestion for pages outside the specified path.
+    *   **Query String Stripping**: Introduced `REMOVE_QUERY_PARAMS` to optionally strip query strings from discovered links. This improves deduplication for websites that use tracking parameters or variations that don't change content.
+    *   **Test Suite Hardening**: Fixed test determinism by explicitly setting environment variables in mocks.
+    *   **Documentation & UX**: Updated `README.md` with new configuration options and cleaned up redundant console logs.
+
 - **Show Last Crawled Date:**
     *   **New Database Table**: Created `crawl_status` to record successful crawl completions.
+>>>>+++ REPLACE
+
     - **Backend Integration**: Updated `/api/ingest` to record a completion timestamp in `crawl_status` upon successful completion.
     - **Frontend Refactor**: Converted `src/app/page.tsx` to a Server Component for secure data fetching and created `src/components/ChatInterface.tsx` for client-side chat logic.
     - **UI Enhancement**: Updated `MetadataDisplay.tsx` to show the "Last crawled" date with hours and minutes. Implemented client-side rendering via `useEffect` to ensure correct localization to the user's timezone and resolve hydration mismatches.
