@@ -67,6 +67,8 @@ Copy `.env.local.example` to `.env.local` and fill in the required values:
 - `TOGETHER_AI_API_KEY` (from Together AI)
 - `CRON_SECRET` (A secret token of your choice for securing the ingest API)
 - `NEXT_PUBLIC_TARGET_URL` (The website URL you want to crawl and search)
+- `NEXT_PUBLIC_TARGET_URL_SUBDIRECTORY` (Optional: A specific subdirectory to restrict content scraping to, e.g., `https://example.com/articles/`. The crawler will still traverse links on pages outside this directory to find matching pages, but will only ingest content from pages within this path.)
+- `REMOVE_QUERY_PARAMS` (Optional: Set to `true` to strip query strings like `?utm_source=...` from discovered links. This is useful for deduplicating pages that are essentially the same but have different tracking parameters.)
 - `NEXT_PUBLIC_CHAT_MODEL` (The LLM model to use; see [Together AI documentation](https://docs.together.ai/docs/serverless-models#chat-models) for model names such as `openai/gpt-oss-20b`)
 - `EMBEDDING_MODEL` (The embedding model to use; default to `BAAI/bge-base-en-v1.5`)
 - `CRAWL_LIMIT` (The maximum number of webpages to be crawled; default to `1000`)
