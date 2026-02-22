@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => {
   const evaluate = vi.fn();
   const close = vi.fn();
   const url = vi.fn(); // just for completeness
+  const title = vi.fn();
   const newPage = vi.fn();
 
   const page = {
@@ -14,6 +15,7 @@ const mocks = vi.hoisted(() => {
     evaluate,
     close,
     url, // just for completeness
+    title,
   };
 
   const browser = {
@@ -26,6 +28,7 @@ const mocks = vi.hoisted(() => {
     evaluate,
     close,
     url,
+    title,
     newPage,
     page,
     browser,
@@ -153,5 +156,124 @@ describe("crawlPage (Vitest)", () => {
     expect(result?.url).toBe(mockUrl);
     // Verify evaluate WAS called (meaning we DID scrape the content)
     expect(mocks.evaluate).toHaveBeenCalled();
+  });
+
+  describe("targetSubdirectory restriction", () => {
+    const targetSubdirectory = "http://example.com/articles/";
+
+    test("should skip scraping content if URL is outside targetSubdirectory", async () => {
+      const mockUrl = "http://example.com/courses/page";
+
+      mocks.goto.mockResolvedValue({
+        ok: () => true,
+        status: () => 200,
+        url: () => mockUrl,
+        headers: () => ({}),
+      });
+      mocks.title.mockResolvedValue("Page Title");
+
+      const result = await crawlPage(
+        mocks.browser as any,
+        mockUrl,
+        undefined,
+        undefined,
+        targetSubdirectory,
+      );
+
+      expect(result).not.toBeNull();
+      expect(result?.url).toBe(mockUrl);
+      expect(result?.content).toBeNull();
+      expect(mocks.evaluate).not.toHaveBeenCalled();
+    });
+
+    test("should scrape content if URL is inside targetSubdirectory", async () => {
+      const mockUrl = "http://example.com/articles/how-to-scrape";
+
+      mocks.goto.mockResolvedValue({
+        ok: () => true,
+        status: () => 200,
+        url: () => mockUrl,
+        headers: () => ({}),
+      });
+
+      const result = await crawlPage(
+        mocks.browser as any,
+        mockUrl,
+        undefined,
+        undefined,
+        targetSubdirectory,
+      );
+
+      expect(result).not.toBeNull();
+      expect(result?.url).toBe(mockUrl);
+      expect(result?.content).not.toBeNull();
+      expect(mocks.evaluate).toHaveBeenCalled();
+    });
+
+    test("should scrape content if targetSubdirectory is NOT provided", async () => {
+      const mockUrl = "http://example.com/anywhere";
+
+      mocks.goto.mockResolvedValue({
+        ok: () => true,
+        status: () => 200,
+        url: () => mockUrl,
+        headers: () => ({}),
+      });
+
+      const result = await crawlPage(mocks.browser as any, mockUrl);
+
+      expect(result).not.toBeNull();
+      expect(result?.content).not.toBeNull();
+      expect(mocks.evaluate).toHaveBeenCalled();
+    });
+
+    test("should handle redirects: outside to inside -> should scrape", async () => {
+      const startUrl = "http://example.com/redirect-me";
+      const finalUrl = "http://example.com/articles/welcome";
+
+      mocks.goto.mockResolvedValue({
+        ok: () => true,
+        status: () => 200,
+        url: () => finalUrl,
+        headers: () => ({}),
+      });
+
+      const result = await crawlPage(
+        mocks.browser as any,
+        startUrl,
+        undefined,
+        undefined,
+        targetSubdirectory,
+      );
+
+      expect(result?.url).toBe(finalUrl);
+      expect(result?.content).not.toBeNull();
+      expect(mocks.evaluate).toHaveBeenCalled();
+    });
+
+    test("should handle redirects: inside to outside -> should skip scrape", async () => {
+      const startUrl = "http://example.com/articles/redirect-out";
+      const finalUrl = "http://example.com/other-place";
+
+      mocks.goto.mockResolvedValue({
+        ok: () => true,
+        status: () => 200,
+        url: () => finalUrl,
+        headers: () => ({}),
+      });
+      mocks.title.mockResolvedValue("Page Title");
+
+      const result = await crawlPage(
+        mocks.browser as any,
+        startUrl,
+        undefined,
+        undefined,
+        targetSubdirectory,
+      );
+
+      expect(result?.url).toBe(finalUrl);
+      expect(result?.content).toBeNull();
+      expect(mocks.evaluate).not.toHaveBeenCalled();
+    });
   });
 });

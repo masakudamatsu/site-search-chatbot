@@ -14,6 +14,8 @@ export async function GET(request: NextRequest) {
   }
 
   const targetUrl = process.env.NEXT_PUBLIC_TARGET_URL;
+  const targetSubdirectory = process.env.NEXT_PUBLIC_TARGET_URL_SUBDIRECTORY;
+
   if (!targetUrl) {
     return NextResponse.json(
       { error: "Missing NEXT_PUBLIC_TARGET_URL environment variable" },
@@ -26,10 +28,19 @@ export async function GET(request: NextRequest) {
       ? parseInt(process.env.CRAWL_LIMIT)
       : 1000;
     // Start crawling with the ingestion callback
-    const visited = await crawlWebsite(targetUrl, limit, async (page) => {
-      console.log(`Ingesting page`);
-      await ingestData(page, generateEmbedding, supabase as any);
-    });
+    const visited = await crawlWebsite(
+      targetUrl,
+      limit,
+      async (page) => {
+        // Skip ingestion if content is null (which indicates it was outside the target subdirectory)
+        if (page.content === null) {
+          return;
+        }
+        console.log(`Ingesting page: ${page.url}`);
+        await ingestData(page, generateEmbedding, supabase as any);
+      },
+      targetSubdirectory,
+    );
 
     // Record the successful completion
     await supabase.from("crawl_status").insert({ completed_at: new Date() });
@@ -58,11 +69,22 @@ export async function POST(request: Request) {
       );
     }
 
+    const targetSubdirectory = process.env.NEXT_PUBLIC_TARGET_URL_SUBDIRECTORY;
+
     // Start crawling with the ingestion callback
-    const visited = await crawlWebsite(baseUrl, limit, async (page) => {
-      console.log(`Ingesting page: ${page.url}`);
-      await ingestData(page, generateEmbedding, supabase as any);
-    });
+    const visited = await crawlWebsite(
+      baseUrl,
+      limit,
+      async (page) => {
+        // Skip ingestion if content is null (which indicates it was outside the target subdirectory)
+        if (page.content === null) {
+          return;
+        }
+        console.log(`Ingesting page: ${page.url}`);
+        await ingestData(page, generateEmbedding, supabase as any);
+      },
+      targetSubdirectory,
+    );
 
     // Record the successful completion
     await supabase.from("crawl_status").insert({ completed_at: new Date() });

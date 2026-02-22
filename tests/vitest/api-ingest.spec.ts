@@ -87,10 +87,14 @@ describe("Ingest API (GET)", () => {
     const res = await GET(req);
     expect(res.status).toBe(200);
 
+    const expectedSubdirectory =
+      process.env.NEXT_PUBLIC_TARGET_URL_SUBDIRECTORY;
+
     expect(crawlWebsite).toHaveBeenCalledWith(
       "http://example.com",
       1000,
       expect.any(Function),
+      expectedSubdirectory,
     );
   });
 });

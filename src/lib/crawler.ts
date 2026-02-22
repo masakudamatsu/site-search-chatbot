@@ -4,7 +4,7 @@ export interface PageData {
   url: string;
   title: string;
   description: string;
-  content: string;
+  content: string | null;
   lastModified?: string;
 }
 
@@ -14,6 +14,7 @@ export async function crawlPage(
   url: string,
   startOrigin?: string,
   visited?: Set<string>,
+  targetSubdirectory?: string,
 ): Promise<PageData | null> {
   if (!url) {
     return null;
@@ -51,6 +52,19 @@ export async function crawlPage(
     }
 
     const lastModified = response.headers()["last-modified"]; // to check whether to crawl again
+
+    // Skip scraping if the final URL is outside the target subdirectory
+    if (targetSubdirectory && !finalUrl.startsWith(targetSubdirectory)) {
+      console.log(`Content scraping skipped (outside subdirectory)`);
+      const title = await page.title();
+      return {
+        url: finalUrl,
+        title,
+        description: "",
+        content: null,
+        lastModified,
+      };
+    }
 
     const data = await page.evaluate(
       ({ finalUrl, lastModified }) => {
@@ -178,6 +192,7 @@ export async function crawlWebsite(
   startUrl: string,
   limit: number = 1000,
   onPageCrawled?: (page: PageData) => Promise<void>,
+  targetSubdirectory?: string,
 ): Promise<Set<string>> {
   const browser = await getBrowser();
   const startOrigin = new URL(startUrl).origin;
@@ -207,6 +222,7 @@ export async function crawlWebsite(
         currentUrl,
         startOrigin,
         visited,
+        targetSubdirectory,
       );
       if (pageData) {
         crawledCount++;
