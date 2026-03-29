@@ -23,10 +23,6 @@ vi.mock("@/lib/ai", () => ({
 }));
 
 // Mock the providers
-vi.mock("@ai-sdk/togetherai", () => ({
-  createTogetherAI: vi.fn().mockReturnValue(vi.fn()),
-}));
-
 vi.mock("@ai-sdk/openai", () => ({
   createOpenAI: mockCreateOpenAI,
 }));
@@ -35,7 +31,6 @@ describe("Chat API Route", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Use dummy keys for testing
-    process.env.TOGETHER_AI_API_KEY = "test-key";
     process.env.HF_TOKEN = "hf-test-token";
   });
 
