@@ -1,14 +1,14 @@
 import { convertToModelMessages, streamText } from "ai";
-import { createTogetherAI } from "@ai-sdk/togetherai";
+import { createOpenAI } from "@ai-sdk/openai";
 import { getRelevantContext } from "@/lib/ai";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
-// Create a Together.ai AI provider instance
-// Explicitly pass the API key from environment variables
-const togetherai = createTogetherAI({
-  apiKey: process.env.TOGETHER_AI_API_KEY,
+// Create a Hugging Face AI provider instance using the OpenAI-compatible endpoint
+const hf = createOpenAI({
+  baseURL: "https://router.huggingface.co/v1/",
+  apiKey: process.env.HF_TOKEN,
 });
 
 export async function POST(req: Request) {
@@ -57,12 +57,12 @@ Instructions:
 
   // Convert the UIMessage[] to ModelMessage[]
   // The messages that are sent from the frontend by the useChat hook are in the UIMessage format, which is designed for rendering in the UI. The backend streamText function, however, needs the messages in a different format, ModelMessage, which is designed to be sent to the LLM API.
-  const modelMessages = convertToModelMessages(messages);
+  const modelMessages = await convertToModelMessages(messages);
 
   const modelName = process.env.NEXT_PUBLIC_CHAT_MODEL || "openai/gpt-oss-20b";
 
   const result = await streamText({
-    model: togetherai(modelName), // see https://docs.together.ai/docs/serverless-models#chat-models for the list of chat model names used by Togther AI
+    model: hf(modelName),
     messages: [systemMessage, ...modelMessages],
 
     // // debugging callbacks
