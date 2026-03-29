@@ -1,26 +1,23 @@
-import { embed } from "ai";
-import { createTogetherAI } from "@ai-sdk/togetherai";
+import { InferenceClient } from "@huggingface/inference";
 import { supabase } from "@/lib/supabase";
 
-if (!process.env.TOGETHER_AI_API_KEY) {
-  throw new Error("Missing TOGETHER_AI_API_KEY environment variable");
+if (!process.env.HF_TOKEN) {
+  throw new Error("Missing HF_TOKEN environment variable");
 }
 
-const togetherai = createTogetherAI({
-  apiKey: process.env.TOGETHER_AI_API_KEY,
-});
+const client = new InferenceClient(process.env.HF_TOKEN);
 
-// We use the model specified in the environment variables (defaulting to intfloat/multilingual-e5-large-instruct if not set)
-export const embeddingModel = togetherai.textEmbeddingModel(
-  process.env.EMBEDDING_MODEL || "intfloat/multilingual-e5-large-instruct",
-);
+// We use the model specified in the environment variables (defaulting to BAAI/bge-m3 if not set)
+export const embeddingModel = process.env.EMBEDDING_MODEL || "BAAI/bge-m3";
 
 export async function generateEmbedding(text: string): Promise<number[]> {
-  const { embedding } = await embed({
+  const embedding = await client.featureExtraction({
     model: embeddingModel,
-    value: text,
+    inputs: text,
   });
-  return embedding;
+
+  // Ensure it's a flat array of numbers (featureExtraction can return nested arrays if multiple inputs)
+  return Array.isArray(embedding) ? (embedding.flat() as number[]) : [];
 }
 
 export async function getRelevantContext(message: string): Promise<string> {

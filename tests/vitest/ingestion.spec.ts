@@ -104,7 +104,10 @@ describe("Ingestion Pipeline", () => {
   test("Step 1: Text Splitting (with Context Enrichment)", async () => {
     const chunks = await processPage(samplePage);
 
+    // With chunkSize: 2000, the 30k+ character speech should have ~15-20 chunks,
+    // not 100+ chunks as it did with chunkSize: 300.
     expect(chunks.length).toBeGreaterThan(1);
+    expect(chunks.length).toBeLessThan(50);
     expect(chunks[0].metadata).toMatchObject({
       url: samplePage.url,
       title: samplePage.title,
