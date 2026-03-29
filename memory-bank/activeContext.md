@@ -7,14 +7,21 @@ Our top priority is to finish building a usable, self-contained prototype of the
 We are transitioning from the prototype phase to a more robust, production-ready system.
 
 ## Recently Completed
+- **Migration to Hugging Face**:
+    *   **Provider Shift**: Completely migrated from Together AI to Hugging Face for both embeddings and LLM chat.
+    *   **Embedding Model**: Switched to `BAAI/bge-m3` (1024 dims) using the Hugging Face `InferenceClient`.
+    *   **Chat Model**: Continued using `openai/gpt-oss-20b` but now hosted via Hugging Face's OpenAI-compatible endpoint.
+    *   **Optimized Chunking**: Increased `chunkSize` to 2000 and `chunkOverlap` to 300 to leverage `BGE-M3`'s 8192-token context window, significantly improving retrieval precision.
+    *   **Dependency Upgrade**: Upgraded `ai`, `@ai-sdk/react`, and `react` to resolve version mismatches between the AI SDK and new providers.
+
 - **Ingestion Performance and Stability:**
     *   **Crawler Performance Optimization**:
         - Moved same-origin check for redirects inside `crawlPage` to skip scraping off-origin pages.
         - Implemented early exit in `crawlPage` to skip scraping if a redirect lands on an already visited URL.
         - Optimized execution order to perform these checks immediately after navigation, before header extraction or content scraping.
         - Refactored the URL queue from an array to a `Set` to automatically prevent duplicate queuing and improve the accuracy of real-time progress logging.
-    *   **Embedding Model Upgrade**: Switched to `intfloat/multilingual-e5-large-instruct` (1024 dimensions) as Together AI deprecated the previous model. This model has a 512-token context window.
-    *   **Optimized Chunking**: Reduced `chunkSize` to 300 and `chunkOverlap` to 50 in `src/lib/ingestion.ts` to stay within the new model's 512-token limit, accounting for metadata enrichment and multilingual (Japanese) token density.
+    *   **Embedding Model Upgrade**: Switched to `BAAI/bge-m3` (1024 dimensions) via Hugging Face. This model has an 8192-token context window.
+    *   **Optimized Chunking**: Increased `chunkSize` to 2000 and `chunkOverlap` to 300 in `src/lib/ingestion.ts` to leverage the 8192-token limit, improving semantic coherence and retrieval accuracy.
     *   **Crawler Redirect Strictness**: Implemented an origin check in `src/lib/crawler.ts` to ensure the crawler doesn't follow redirects to external domains, preventing crawler leakage.
     *   **Supabase Security Hardening**: Enabled Row Level Security (RLS) on `documents` and `crawled_pages` tables. Moved the `vector` extension to a dedicated `extensions` schema and updated the `match_documents` function with a strict `search_path = public, extensions` for enhanced security.
 

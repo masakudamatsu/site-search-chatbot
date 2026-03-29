@@ -12,7 +12,7 @@ The application will be a monolithic Next.js application, containing both the fr
     - **Tracking:** A `crawled_pages` table stores the `url`, `last_modified` header, and `content_hash` for every processed page.
     - **Date Check:** Before processing, the system checks if the `Last-Modified` header matches the stored value. If it matches, the page is skipped.
     - **Checksum Check:** If the date differs (or is missing), the system computes a SHA-256 hash of the page content. If this hash matches the stored `content_hash`, the page is skipped to save embedding costs.
-    - **Re-embedding:** Only if both checks fail (implying new or changed content) does the system generate embeddings using the Together.ai API.
+    - **Re-embedding:** Only if both checks fail (implying new or changed content) does the system generate embeddings using the Hugging Face Inference API.
     - **Origin Strictness:** During crawling, the system verifies that the final URL after any redirects still matches the original target origin to prevent leakage to external domains.
     - **Subdirectory Filtering**: The system can optionally restrict content scraping to a specific path (e.g., `/articles/`). This is implemented as a check inside `crawlPage` *after* redirects are resolved. Pages outside the path are still followed for links but their content is not scraped or ingested.
     - **Redundant Redirect Skip**: If a redirect lands on a URL that has already been visited, the system skips scraping that page. Both this and the origin check happen inside `crawlPage` immediately after navigation to optimize performance.
@@ -26,10 +26,10 @@ The application will be a monolithic Next.js application, containing both the fr
 
 ## Query and Response Flow
 1.  **User Input:** The user sends a question through the Next.js frontend.
-2.  **Embedding:** The backend creates an embedding of the user's question using the Together.ai API.
+2.  **Embedding:** The backend creates an embedding of the user's question using the Hugging Face Inference API.
 3.  **Vector Search:** The backend queries the Supabase pgvector database (using 1024-dimension vectors) to find the most relevant text chunks.
     - **Parameters:** It uses a `match_threshold` of 0.5 and retrieves the top 10 matches to ensure diversity and inclusion of specific but lower-ranked documents (e.g. lists of names).
-4.  **LLM Prompting:** The user's question, the chat history, and the retrieved text chunks are formatted into a prompt for the `gpt-oss-20b` model hosted on Together.ai.
+4.  **LLM Prompting:** The user's question, the chat history, and the retrieved text chunks are formatted into a prompt for the `gpt-oss-20b` model hosted on Hugging Face (OpenAI-compatible endpoint).
     - **System Prompt:** Explicitly instructs the LLM to cite sources using Markdown links and attributes information strictly to the provided chunk's source URL.
 5.  **Streaming Response:** The response from the LLM is streamed back to the user interface using the Vercel AI SDK, providing a real-time, interactive experience.
 

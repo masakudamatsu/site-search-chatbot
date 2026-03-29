@@ -10,8 +10,8 @@
 - **Typography Styling:** `@tailwindcss/typography`
 
 ## Services & Platforms
-- **LLM Hosting:** Together.ai (for `gpt-oss-20b`)
-- **Embedding Generation:** Together.ai (`intfloat/multilingual-e5-large-instruct`, which is defined in `.env.local`)
+- **LLM Hosting:** Hugging Face (OpenAI-compatible endpoint for `openai/gpt-oss-20b`)
+- **Embedding Generation:** Hugging Face (`BAAI/bge-m3`, which is defined in `.env.local`)
 - **Vector Database:** Supabase pgvector
 - **Deployment:** Vercel
 - **Scheduled Jobs:** Vercel Cron Jobs
