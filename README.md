@@ -14,7 +14,7 @@ A powerful, open-source RAG (Retrieval-Augmented Generation) chatbot designed to
 - **JavaScript Support**:
     - Uses Playwright to crawl dynamic, JavaScript-rendered content.
 - **Open-Source LLMs**:
-    - Powered by Together AI's open-source model library.
+    - Powered by Hugging Face's open-source model library.
 - **Privacy First**:
     - Configured with `noindex` metadata to keep your test deployments private.
 
@@ -22,7 +22,7 @@ A powerful, open-source RAG (Retrieval-Augmented Generation) chatbot designed to
 
 - **Framework**: [Next.js](https://nextjs.org/) (App Router)
 - **AI Orchestration**: [Vercel AI SDK](https://sdk.vercel.ai/) & [LangChain.js](https://js.langchain.com/)
-- **Embeddings & LLM**: [Together AI](https://www.together.ai/)
+- **Embeddings & LLM**: [Hugging Face](https://huggingface.co/)
 - **Vector Database**: [Supabase pgvector](https://supabase.com/docs/guides/database/extensions/pgvector)
 - **Crawler**: [Playwright](https://playwright.dev/)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
@@ -56,21 +56,22 @@ npm install
         2.  `crawled_pages.sql`: Sets up the tracking table for smart updates.
         3.  `match_documents.sql`: Creates the vector search function.
 
-### 4. AI & Embeddings Setup (Together AI)
-- Sign up for an account at [Together AI](https://www.together.ai/).
-- Navigate to **Manage API Keys** page.
-- Copy your **API Key** for use in the environment variables (see below).
+### 4. AI & Embeddings Setup (Hugging Face)
+- Sign up for a free account at [Hugging Face](https://huggingface.co/).
+- Navigate to [Settings > Access Tokens](https://huggingface.co/settings/tokens).
+- Create a new token with **Read** access.
+- Copy your **Access Token** for use in the environment variables (see below).
 
 ### 5. Configure Environment Variables
 Copy `.env.local.example` to `.env.local` and fill in the required values:
 - `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` (from Supabase settings)
-- `TOGETHER_AI_API_KEY` (from Together AI)
+- `HF_TOKEN` (your Hugging Face Access Token)
 - `CRON_SECRET` (A secret token of your choice for securing the ingest API)
 - `NEXT_PUBLIC_TARGET_URL` (The website URL you want to crawl and search)
 - `NEXT_PUBLIC_TARGET_URL_SUBDIRECTORY` (Optional: A specific subdirectory to restrict content scraping to, e.g., `https://example.com/articles/`. The crawler will still traverse links on pages outside this directory to find matching pages, but will only ingest content from pages within this path.)
 - `REMOVE_QUERY_PARAMS` (Optional: Set to `true` to strip query strings like `?utm_source=...` from discovered links. This is useful for deduplicating pages that are essentially the same but have different tracking parameters.)
-- `NEXT_PUBLIC_CHAT_MODEL` (The LLM model to use; see [Together AI documentation](https://docs.together.ai/docs/serverless-models#chat-models) for model names such as `openai/gpt-oss-20b`)
-- `EMBEDDING_MODEL` (The embedding model to use; default to `BAAI/bge-base-en-v1.5`)
+- `NEXT_PUBLIC_CHAT_MODEL` (The LLM model to use; default to `openai/gpt-oss-20b`. Note that this project uses the OpenAI-compatible endpoint of Hugging Face.)
+- `EMBEDDING_MODEL` (The embedding model to use; default to `BAAI/bge-m3`)
 - `CRAWL_LIMIT` (The maximum number of webpages to be crawled; default to `1000`)
 - `TEXT_SEPARATORS` (Optional: Custom JSON array of strings to split text. Default: `["\n\n", "\n", ". ", " ", ""]`. For Japanese sites, use `["\n\n", "\n", "。", " ", ""]`); for detail, see [LangChain Docs](https://docs.langchain.com/oss/javascript/integrations/splitters/recursive_text_splitter#splitting-text-from-languages-without-word-boundaries).
 
@@ -83,6 +84,9 @@ curl -X GET http://localhost:3000/api/ingest \
      -H "Authorization: Bearer CRON_SECRET"
 ```
 where `CRON_SECRET` is replaced with the value specified in `.env.local`.
+
+curl -X GET http://localhost:3000/api/ingest \
+     -H "Authorization: Bearer acc543ee86307a73d5abe73d5fd3238a0702eace9a03340158f73f6e8508ff5d"
 
 ## 🏗️ Development Workflow
 
@@ -110,8 +114,8 @@ If you need to switch to a different embedding model, you must ensure it meets t
 #### ⚠️ Critical Requirements
 - **Vector Dimensions**: The model must match the dimension defined in your Supabase schema (currently **1024**). If the model uses a different dimension (e.g., 1024 or 1536), you must update the database schema and vector search functions (see below).
 - **Context Window & Chunk Size**: The model's context window must be large enough to handle the configured `chunkSize` plus metadata overhead. 
-    - The current `chunkSize` is **300 characters**.
-    - If using a model with a small context window, you **must** reduce the `chunkSize` in `src/lib/ingestion.ts` to avoid errors.
+    - The current `chunkSize` is **2000 characters** (optimized for `BAAI/bge-m3`'s 8192 token limit).
+    - If switching to a model with a smaller context window (like 512 tokens), you **must** reduce the `chunkSize` in `src/lib/ingestion.ts` to avoid errors.
 
 #### Switching Steps:
 1. **Update Environment Variables**:
