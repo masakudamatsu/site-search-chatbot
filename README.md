@@ -85,9 +85,6 @@ curl -X GET http://localhost:3000/api/ingest \
 ```
 where `CRON_SECRET` is replaced with the value specified in `.env.local`.
 
-curl -X GET http://localhost:3000/api/ingest \
-     -H "Authorization: Bearer acc543ee86307a73d5abe73d5fd3238a0702eace9a03340158f73f6e8508ff5d"
-
 ## 🏗️ Development Workflow
 
 This project is optimized for AI-augmented development using [Cline](https://cline.bot/) (or similar AI agents).
