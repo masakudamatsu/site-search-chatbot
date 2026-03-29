@@ -25,8 +25,8 @@ export async function processPage(data: PageData): Promise<ProcessedChunk[]> {
   }
 
   const splitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 300,
-    chunkOverlap: 50,
+    chunkSize: 2000,
+    chunkOverlap: 300,
     separators,
   });
 

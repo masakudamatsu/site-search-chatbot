@@ -1,7 +1,7 @@
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import * as aiLib from "@/lib/ai";
 import { supabase } from "@/lib/supabase";
-import { embed } from "ai";
+import { InferenceClient } from "@huggingface/inference";
 
 // Mock the dependencies
 vi.mock("@/lib/supabase", () => ({
@@ -10,12 +10,17 @@ vi.mock("@/lib/supabase", () => ({
   },
 }));
 
-// Mock the 'ai' package to intercept the 'embed' call
-vi.mock("ai", async (importOriginal) => {
-  const original = await importOriginal<typeof import("ai")>();
+// Use vi.hoisted to ensure the mock is available before vi.mock is called
+const { mockFeatureExtraction } = vi.hoisted(() => ({
+  mockFeatureExtraction: vi.fn(),
+}));
+
+// Mock the '@huggingface/inference' package
+vi.mock("@huggingface/inference", () => {
   return {
-    ...original,
-    embed: vi.fn(),
+    InferenceClient: vi.fn().mockImplementation(() => ({
+      featureExtraction: mockFeatureExtraction,
+    })),
   };
 });
 
@@ -28,15 +33,14 @@ describe("AI Library", () => {
   describe("generateEmbedding", () => {
     test("should generate a valid embedding vector", async () => {
       const mockEmbedding = Array(1024).fill(0.1);
-      vi.mocked(embed).mockResolvedValue({ embedding: mockEmbedding } as any);
+      mockFeatureExtraction.mockResolvedValue(mockEmbedding);
 
       const embedding = await aiLib.generateEmbedding("Hello, world!");
 
-      expect(embed).toHaveBeenCalledWith(
-        expect.objectContaining({
-          value: "Hello, world!",
-        }),
-      );
+      expect(mockFeatureExtraction).toHaveBeenCalledWith({
+        model: expect.any(String),
+        inputs: "Hello, world!",
+      });
       expect(embedding).toEqual(mockEmbedding);
     });
   });
@@ -60,8 +64,8 @@ describe("AI Library", () => {
 
 This is the second document.`;
 
-      // Mock embed to return a predictable embedding
-      vi.mocked(embed).mockResolvedValue({ embedding: mockEmbedding } as any);
+      // Mock InferenceClient to return a predictable embedding
+      mockFeatureExtraction.mockResolvedValue(mockEmbedding);
 
       // Mock Supabase response
       vi.mocked(supabase.rpc).mockResolvedValue({
@@ -74,12 +78,11 @@ This is the second document.`;
 
       const context = await aiLib.getRelevantContext("What are the documents?");
 
-      // Verify embed was called (proving generateEmbedding was called)
-      expect(embed).toHaveBeenCalledWith(
-        expect.objectContaining({
-          value: "What are the documents?",
-        }),
-      );
+      // Verify HF was called (proving generateEmbedding was called)
+      expect(mockFeatureExtraction).toHaveBeenCalledWith({
+        model: expect.any(String),
+        inputs: "What are the documents?",
+      });
 
       // Verify Supabase RPC was called with the mocked embedding
       expect(supabase.rpc).toHaveBeenCalledWith("match_documents", {
@@ -93,7 +96,7 @@ This is the second document.`;
 
     test("should handle no documents found", async () => {
       const mockEmbedding = Array(1024).fill(0.2);
-      vi.mocked(embed).mockResolvedValue({ embedding: mockEmbedding } as any);
+      mockFeatureExtraction.mockResolvedValue(mockEmbedding);
       vi.mocked(supabase.rpc).mockResolvedValue({
         data: [],
         error: null,
@@ -117,7 +120,7 @@ This is the second document.`;
         name: "PostgrestError",
       };
 
-      vi.mocked(embed).mockResolvedValue({ embedding: mockEmbedding } as any);
+      mockFeatureExtraction.mockResolvedValue(mockEmbedding);
       vi.mocked(supabase.rpc).mockResolvedValue({
         data: null,
         error: mockError,
