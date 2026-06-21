@@ -31,6 +31,10 @@
     "remark-gfm": "4.0.1",
     "tailwindcss": "4.1.14"
   },
+  "overrides": {
+    "postcss": ">=8.5.10",
+    "esbuild": ">=0.28.1"
+  },
   "devDependencies": {
     "@playwright/test": "1.56.1",
     "@tailwindcss/typography": "0.5.19",
